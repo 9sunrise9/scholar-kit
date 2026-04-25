@@ -58,10 +58,10 @@ skill_deps() {
 # 返回某依赖的安装参考提示
 dep_hint() {
   case "$1" in
-    curl)    echo "brew install curl  /  sudo apt install curl" ;;
-    tar)     echo "通常随系统自带，请检查系统环境" ;;
-    pandoc)  echo "brew install pandoc  /  sudo apt install pandoc  /  https://pandoc.org/installing.html" ;;
-    python3) echo "brew install python  /  sudo apt install python3  /  https://python.org/downloads" ;;
+    curl)    echo "brew install curl  /  sudo apt install curl  /  Windows 10 build 17063+ 内置" ;;
+    tar)     echo "通常随系统自带（Windows 10 build 17063+ 内置），请检查系统环境" ;;
+    pandoc)  echo "brew install pandoc  /  sudo apt install pandoc  /  winget install JohnMacFarlane.Pandoc  /  https://pandoc.org/installing.html" ;;
+    python3) echo "brew install python  /  sudo apt install python3  /  winget install Python.Python.3  /  https://python.org/downloads" ;;
     *)       echo "" ;;
   esac
 }
@@ -83,13 +83,22 @@ auto_install_cmd() {
   fi
 }
 
-# 检查中文字体（思源黑体 / Noto CJK）是否可用
+# 检查中文字体（思源黑体 / Noto CJK / Windows 内置中文字体）是否可用
 # 仅提示，不阻断安装（返回值始终为 0）
 check_cjk_font() {
+  # Windows（Git Bash / MSYS / Cygwin）：系统内置微软雅黑 / 黑体
+  if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+    local _win_fonts="${WINDIR:-C:/Windows}/Fonts"
+    if [[ -f "$_win_fonts/msyh.ttc" || -f "$_win_fonts/simhei.ttf" ]]; then
+      echo "  ✓ 已检测到 Windows 内置中文字体（微软雅黑 / 黑体）"
+      return 0
+    fi
+  fi
+
   # 方法 1：fc-list（Linux / macOS with fontconfig）
   if command -v fc-list &>/dev/null; then
-    if fc-list 2>/dev/null | grep -qi "source han\|noto.*cjk\|notosans.*cjk"; then
-      echo "  ✓ 已检测到思源黑体 / Noto CJK 字体"
+    if fc-list 2>/dev/null | grep -qi "source han\|noto.*cjk\|notosans.*cjk\|microsoft yahei\|simhei"; then
+      echo "  ✓ 已检测到中文字体"
       return 0
     fi
   fi
@@ -102,6 +111,8 @@ check_cjk_font() {
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
     "/usr/share/fonts/noto-cjk/NotoSansCJKsc-Regular.otf"
     "/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc"
+    "C:/Windows/Fonts/msyh.ttc"
+    "C:/Windows/Fonts/simhei.ttf"
   )
   for _p in "${_font_paths[@]}"; do
     if [[ -f "$_p" ]]; then
@@ -112,8 +123,8 @@ check_cjk_font() {
 
   # 未找到任何已知中文字体
   echo ""
-  echo "  ℹ️  未检测到思源黑体（Source Han Sans CN）"
-  echo "     scientific-drawing 的 matplotlib 模板默认使用思源黑体显示中文，"
+  echo "  ℹ️  未检测到中文字体"
+  echo "     scientific-drawing 的 matplotlib 模板需要中文字体才能正常显示汉字，"
   echo "     未安装时中文可能显示为方块符号。"
   echo ""
   echo "  推荐安装方式："
@@ -121,6 +132,11 @@ check_cjk_font() {
     echo "    Homebrew：brew install --cask font-source-han-sans"
     echo "    手动下载：https://github.com/adobe-fonts/source-han-sans/releases"
     echo "    （macOS 内置 PingFang SC，TikZ 图表中文可正常显示）"
+  elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+    echo "    Windows 已内置微软雅黑（Microsoft YaHei）和黑体（SimHei）"
+    echo "    若仍显示方块，请重建 matplotlib 字体缓存："
+    echo "      python -c \"import matplotlib.font_manager; matplotlib.font_manager._rebuild()\""
+    echo "    如需思源黑体：https://github.com/adobe-fonts/source-han-sans/releases"
   else
     echo "    Ubuntu/Debian：sudo apt install fonts-noto-cjk"
     echo "    Fedora：        sudo dnf install google-noto-sans-cjk-fonts"

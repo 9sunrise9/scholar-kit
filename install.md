@@ -101,20 +101,26 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 * 或检查以下常见路径是否存在字体文件：
   + `~/Library/Fonts/SourceHanSansCN-Regular.ttf`
   + `/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc`（Linux）
+* Windows：检查 `%WINDIR%\Fonts\msyh.ttc`（微软雅黑）或 `%WINDIR%\Fonts\simhei.ttf`（黑体）是否存在
 
 **检测结果处理**：
 
-* 若检测到思源黑体 / Noto CJK：提示 `✓` 并继续。
+* **Windows**：系统内置微软雅黑（Microsoft YaHei）和黑体（SimHei），均可用于中文显示，直接提示 `✓` 并继续。如需更专业的学术字体，可额外安装思源黑体。
+* 若检测到思源黑体 / Noto CJK / 微软雅黑 / 黑体：提示 `✓` 并继续。
 * 若未检测到：展示以下提示（**非阻断**，用户确认后继续安装）：
 
 ```
-ℹ️  未检测到思源黑体（Source Han Sans CN）
-   scientific-drawing 的 matplotlib 模板默认使用思源黑体显示中文，
+ℹ️  未检测到中文字体
+   scientific-drawing 的 matplotlib 模板需要中文字体才能正常显示汉字，
    未安装时中文可能显示为方块符号。
 
 推荐安装方式：
   macOS：  brew install --cask font-source-han-sans
   Ubuntu： sudo apt install fonts-noto-cjk
+  Windows：系统已内置微软雅黑（Microsoft YaHei）和黑体（SimHei），
+           若仍显示方块请尝试重建 matplotlib 字体缓存：
+             python -c "import matplotlib.font_manager; matplotlib.font_manager._rebuild()"
+           如需思源黑体：https://github.com/adobe-fonts/source-han-sans/releases
   手动：   https://github.com/adobe-fonts/source-han-sans/releases
 
 也可安装任意中文字体后，在绘图脚本的 _find_cjk_font() 中添加字体路径。
@@ -122,7 +128,7 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 已了解，继续安装 [回车确认]
 ```
 
-> 字体缺失不会阻断安装，技能文件仍会正常下载。缺少字体只影响 matplotlib 图表的中文显示；TikZ 图表在 macOS 上可使用内置 PingFang SC 正常渲染。
+> 字体缺失不会阻断安装，技能文件仍会正常下载。缺少字体只影响 matplotlib 图表的中文显示；TikZ 图表在 macOS 上可使用内置 PingFang SC、在 Windows 上可使用微软雅黑正常渲染。
 
 ---
 

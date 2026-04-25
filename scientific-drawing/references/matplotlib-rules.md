@@ -11,18 +11,45 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as _fm
 import os, sys
 
-# ── 字体路径（思源系列，本机路径）──
-_SANS_PATH = "/Users/sunyue/Library/Fonts/SourceHanSansCN-Regular.ttf"
-_SERIF_PATH = "/Users/sunyue/Library/Fonts/SourceHanSerifCN-Regular.ttf"
+# ── 中文字体自动查找（优先思源黑体，Windows 回退至系统内置字体）─────────────
+def _find_cjk_font():
+    """按优先级搜索中文字体文件，返回路径或 None。"""
+    candidates = [
+        os.path.expanduser("~/Library/Fonts/SourceHanSansCN-Regular.ttf"),
+        os.path.expanduser("~/Library/Fonts/SourceHanSansSC-Regular.otf"),
+        "/Library/Fonts/SourceHanSansCN-Regular.ttf",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/noto-cjk/NotoSansCJKsc-Regular.otf",
+        "/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc",
+        # Windows 内置中文字体
+        os.path.expandvars(r"%WINDIR%\Fonts\msyh.ttc"),    # 微软雅黑
+        os.path.expandvars(r"%WINDIR%\Fonts\simhei.ttf"),  # 黑体
+        "C:/Windows/Fonts/msyh.ttc",
+        "C:/Windows/Fonts/simhei.ttf",
+        # ↓ 如需使用其他字体，在此添加路径：
+        # "/path/to/your/font.ttf",
+    ]
+    for p in candidates:
+        if os.path.isfile(p):
+            return p
+    return None
 
-# ── 注册字体（必须在 rcParams 之前！）──
-_fm.fontManager.addfont(_SANS_PATH)
-_fm.fontManager.addfont(_SERIF_PATH)
+_font_path = _find_cjk_font()
+if _font_path:
+    _fm.fontManager.addfont(_font_path)
+else:
+    print("[scientific-drawing] ⚠️  未找到中文字体，中文可能显示为方块。\n"
+          "  macOS：brew install --cask font-source-han-sans\n"
+          "  Linux：sudo apt install fonts-noto-cjk\n"
+          "  Windows：系统已内置微软雅黑，若仍出现方块请重建字体缓存\n"
+          "  也可在 _find_cjk_font() 的 candidates 列表中添加自己的字体路径。",
+          file=sys.stderr)
 
 # ── 全局 rcParams ──
 plt.rcParams['font.family']        = 'sans-serif'
-plt.rcParams['font.sans-serif']    = ['Source Han Sans CN', 'PingFang SC',
-                                       'Heiti SC', 'Arial Unicode MS', 'DejaVu Sans']
+plt.rcParams['font.sans-serif']    = ['Source Han Sans CN', 'Noto Sans CJK SC',
+                                       'Microsoft YaHei', 'PingFang SC',
+                                       'SimHei', 'Arial Unicode MS', 'DejaVu Sans']
 plt.rcParams['font.serif']         = ['Source Han Serif CN', 'STSong',
                                        'SimSun', 'DejaVu Serif']
 plt.rcParams['font.weight']        = 'normal'   # 不加粗

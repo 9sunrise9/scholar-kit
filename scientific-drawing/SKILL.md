@@ -91,9 +91,9 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as _fm
 import os, sys
 
-# ── 中文字体自动查找（思源黑体优先，可自行替换路径）───────────────────────
+# ── 中文字体自动查找（优先思源黑体，Windows 回退至系统内置字体）─────────────
 def _find_cjk_font():
-    """按优先级搜索思源黑体 / Noto CJK 字体文件，返回路径或 None。"""
+    """按优先级搜索中文字体文件，返回路径或 None。"""
     candidates = [
         os.path.expanduser("~/Library/Fonts/SourceHanSansCN-Regular.ttf"),
         os.path.expanduser("~/Library/Fonts/SourceHanSansSC-Regular.otf"),
@@ -101,6 +101,11 @@ def _find_cjk_font():
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
         "/usr/share/fonts/noto-cjk/NotoSansCJKsc-Regular.otf",
         "/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc",
+        # Windows 内置中文字体
+        os.path.expandvars(r"%WINDIR%\Fonts\msyh.ttc"),    # 微软雅黑
+        os.path.expandvars(r"%WINDIR%\Fonts\simhei.ttf"),  # 黑体
+        "C:/Windows/Fonts/msyh.ttc",
+        "C:/Windows/Fonts/simhei.ttf",
         # ↓ 如需使用其他字体，在此添加路径：
         # "/path/to/your/font.ttf",
     ]
@@ -113,15 +118,17 @@ _font_path = _find_cjk_font()
 if _font_path:
     _fm.fontManager.addfont(_font_path)
 else:
-    print("[scientific-drawing] ⚠️  未找到思源黑体，中文可能显示为方块。\n"
-          "  安装：brew install --cask font-source-han-sans  "
-          "（或 sudo apt install fonts-noto-cjk）\n"
+    print("[scientific-drawing] ⚠️  未找到中文字体，中文可能显示为方块。\n"
+          "  macOS：brew install --cask font-source-han-sans\n"
+          "  Linux：sudo apt install fonts-noto-cjk\n"
+          "  Windows：系统已内置微软雅黑，若仍出现方块请重建字体缓存\n"
           "  也可在 _find_cjk_font() 的 candidates 列表中添加自己的字体路径。",
           file=sys.stderr)
 
 plt.rcParams['font.family']        = 'sans-serif'
 plt.rcParams['font.sans-serif']    = ['Source Han Sans CN', 'Noto Sans CJK SC',
-                                       'PingFang SC', 'Arial Unicode MS', 'DejaVu Sans']
+                                       'Microsoft YaHei', 'PingFang SC',
+                                       'SimHei', 'Arial Unicode MS', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['font.size']          = 13       # 小四 ≈ 13pt（正文对齐）
 plt.rcParams['axes.titlesize']     = 20
