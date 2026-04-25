@@ -93,14 +93,14 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 
 ### Step 1.6 — 检查绘图中文字体（仅 scientific-drawing）
 
-若用户选择了 `scientific-drawing`，在工具依赖检查完成后，额外检测中文字体是否可用。
+若用户选择了 `scientific-drawing` ，在工具依赖检查完成后，额外检测中文字体是否可用。
 
 **检测方式**：
 
-- macOS / Linux（有 `fc-list`）：执行 `fc-list 2>/dev/null | grep -i "source han\|noto.*cjk"` 是否有输出
-- 或检查以下常见路径是否存在字体文件：
-  - `~/Library/Fonts/SourceHanSansCN-Regular.ttf`
-  - `/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc`（Linux）
+* macOS / Linux（有 `fc-list`）：执行 `fc-list 2>/dev/null | grep -i "source han\|noto.*cjk"` 是否有输出
+* 或检查以下常见路径是否存在字体文件：
+  + `~/Library/Fonts/SourceHanSansCN-Regular.ttf`
+  + `/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc`（Linux）
 
 **检测结果处理**：
 
