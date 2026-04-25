@@ -45,6 +45,80 @@ TOOL_URLS=(
 
 print_divider() { echo ""; echo "────────────────────────────────────────"; echo ""; }
 
+# 返回某技能所需的依赖列表（空格分隔）
+skill_deps() {
+  case "$1" in
+    academic-writing)     echo "curl tar pandoc python3" ;;
+    scientific-drawing)   echo "curl tar python3" ;;
+    writing-style-check)  echo "curl tar python3" ;;
+    *)                    echo "curl tar" ;;
+  esac
+}
+
+# 返回某依赖的安装参考提示
+dep_hint() {
+  case "$1" in
+    curl)    echo "brew install curl  /  sudo apt install curl" ;;
+    tar)     echo "通常随系统自带，请检查系统环境" ;;
+    pandoc)  echo "brew install pandoc  /  sudo apt install pandoc  /  https://pandoc.org/installing.html" ;;
+    python3) echo "brew install python  /  sudo apt install python3  /  https://python.org/downloads" ;;
+    *)       echo "" ;;
+  esac
+}
+
+# 返回自动安装命令（依赖包管理器检测）
+auto_install_cmd() {
+  local dep="$1"
+  if command -v brew &>/dev/null; then
+    case "$dep" in
+      python3) echo "brew install python" ;;
+      *)       echo "brew install $dep" ;;
+    esac
+  elif command -v apt-get &>/dev/null; then
+    echo "sudo apt-get install -y $dep"
+  elif command -v dnf &>/dev/null; then
+    echo "sudo dnf install -y $dep"
+  else
+    echo ""
+  fi
+}
+
+# 检查单个依赖；缺失时询问是否安装
+# 返回 0 表示可用，返回 1 表示仍缺失
+check_dep() {
+  local dep="$1"
+  if command -v "$dep" &>/dev/null; then
+    echo "  ✓ $dep"
+    return 0
+  fi
+
+  local hint install_cmd
+  hint=$(dep_hint "$dep")
+  install_cmd=$(auto_install_cmd "$dep")
+
+  echo ""
+  echo "  ⚠️  未找到依赖：$dep"
+  [[ -n "$hint" ]] && echo "     参考：$hint"
+
+  if [[ -n "$install_cmd" ]]; then
+    read -r -p "  是否现在自动安装 $dep？($install_cmd) [y/N] " ans
+    if [[ "$ans" =~ ^[Yy]$ ]]; then
+      echo "  → 执行：$install_cmd"
+      eval "$install_cmd"
+      if command -v "$dep" &>/dev/null; then
+        echo "  ✓ $dep 安装成功"
+        return 0
+      else
+        echo "  ✗ $dep 安装失败，请手动安装后重试"
+        return 1
+      fi
+    fi
+  else
+    echo "  未找到可用包管理器，无法自动安装，请手动安装 $dep 后重新运行安装脚本。"
+  fi
+  return 1
+}
+
 ask_multiselect() {
   # Sets REPLY_INDICES to selected 0-based indices
   local prompt="$1"; shift
@@ -103,6 +177,20 @@ echo ""
 echo "scholar-kit 安装向导"
 echo "===================="
 
+# ── 核心依赖检查（curl / tar）────────────────────────────────────────────────
+print_divider
+echo "检查核心依赖..."
+echo ""
+CORE_OK=true
+for _dep in curl tar; do
+  check_dep "$_dep" || CORE_OK=false
+done
+if [[ "$CORE_OK" == "false" ]]; then
+  echo ""
+  echo "❌  缺少必要工具，安装中止。请安装上述依赖后重新运行脚本。"
+  exit 1
+fi
+
 # Step 1: 选技能
 print_divider
 ask_multiselect "Step 1 — 选择要安装的技能：" "${SKILL_DESCS[@]}"
@@ -116,6 +204,39 @@ if [[ ${#SELECTED_SKILLS[@]} -eq 0 ]]; then
 fi
 echo ""
 echo "已选技能：${SELECTED_SKILLS[*]}"
+
+# Step 1.5: 检查技能依赖
+print_divider
+echo "Step 1.5 — 检查技能所需依赖..."
+echo ""
+
+# 收集所有已选技能的不重复依赖（排除已检查的 curl / tar）
+SKILL_DEP_LIST=()
+for _skill in "${SELECTED_SKILLS[@]}"; do
+  for _dep in $(skill_deps "$_skill"); do
+    [[ "$_dep" == "curl" || "$_dep" == "tar" ]] && continue
+    _already=false
+    for _d in "${SKILL_DEP_LIST[@]}"; do [[ "$_d" == "$_dep" ]] && _already=true && break; done
+    [[ "$_already" == "false" ]] && SKILL_DEP_LIST+=("$_dep")
+  done
+done
+
+if [[ ${#SKILL_DEP_LIST[@]} -eq 0 ]]; then
+  echo "  所有技能依赖均已满足。"
+else
+  SKILL_DEPS_OK=true
+  for _dep in "${SKILL_DEP_LIST[@]}"; do
+    check_dep "$_dep" || SKILL_DEPS_OK=false
+  done
+  if [[ "$SKILL_DEPS_OK" == "false" ]]; then
+    echo ""
+    read -r -p "  部分依赖缺失，技能功能可能受限。是否仍继续安装？[y/N] " _ans
+    if [[ ! "$_ans" =~ ^[Yy]$ ]]; then
+      echo "安装中止。"
+      exit 0
+    fi
+  fi
+fi
 
 # Step 2: 选工具（循环直到有至少一个可用）
 while true; do

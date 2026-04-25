@@ -26,7 +26,74 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 
 ---
 
+## Step 1.5 — 检查技能依赖环境
+
+在用户选完技能后，**立即检测所需依赖是否已安装**，再进入下一步。
+
+各技能依赖关系如下：
+
+| 技能 | 依赖工具 |
+|------|---------|
+| academic-writing    | `curl` 、 `tar` （下载必需）、 `pandoc` 、 `python3` |
+| scientific-drawing  | `curl` 、 `tar` （下载必需）、 `python3` |
+| writing-style-check | `curl` 、 `tar` （下载必需）、 `python3` |
+
+检测方式：在终端执行 `command -v <工具名>` ，有输出则表示已安装。Windows 下使用 `where <工具名>` 。
+
+### 处理规则
+
+** `curl` 和 `tar` （必要工具）**
+
+若任意一个缺失，直接告知用户无法继续并终止安装：
+
+```
+❌  缺少必要工具：curl / tar，无法下载安装包。
+请先安装后重新运行安装向导。
+
+参考安装方式：
+  macOS：  brew install curl
+  Ubuntu： sudo apt install curl
+```
+
+**技能专属依赖（ `pandoc` 、 `python3` ）**
+
+逐个询问用户是否立即安装缺失的依赖：
+
+```
+⚠️  未找到依赖：pandoc
+    academic-writing 需要 pandoc 才能正常运行。
+
+    是否现在安装？
+    macOS：  brew install pandoc
+    Ubuntu： sudo apt install pandoc
+    其他：   https://pandoc.org/installing.html
+
+    输入 y 自动安装，输入 n 跳过（技能功能可能受限）：
+```
+
+* 用户输入 `y`：执行对应的包管理器命令安装，安装完成后提示成功或失败。
+* 用户输入 `n`：跳过，继续后续步骤，在最终报告中注明"该依赖缺失，功能可能受限"。
+
+若**所有技能专属依赖均缺失**且用户全部拒绝安装，询问是否仍要继续安装技能文件：
+
+```
+⚠️  部分依赖未安装，技能可能无法正常使用。是否仍然继续安装技能文件？[y/N]
+```
+
+**包管理器自动选择**（Agent 执行时自动检测）：
+
+| 系统 | 优先使用 |
+|------|---------|
+| macOS | `brew` |
+| Ubuntu / Debian | `apt-get` |
+| Fedora / RHEL | `dnf` |
+| Windows | 提示手动安装，附官网链接 |
+
+---
+
 ## Step 2 — 询问目标 AI 工具
+
+> **前提**：Step 1.5 已通过（核心依赖满足，或用户确认继续）。
 
 向用户展示以下选项，**请用户选择要安装到哪个 AI 工具**（可多选）：
 
