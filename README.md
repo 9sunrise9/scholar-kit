@@ -20,6 +20,56 @@
 
 ---
 
+## 依赖说明
+
+各技能所需的外部工具与库如下表所示。
+
+### academic-writing
+
+| 依赖 | 类型 | 版本要求 | 安装方式 |
+|------|------|----------|----------|
+| **pandoc** | 必需 | ≥ 3.0 | `brew install pandoc` / `sudo apt install pandoc` / [pandoc.org](https://pandoc.org/installing.html) |
+| **Python** | 必需 | ≥ 3.9 | 系统自带或 `brew install python` / `sudo apt install python3` |
+| **docx 模版** | 必需 | `.docx` | 用户自行提供，放项目根目录 |
+| **watchdog** | 可选 | — | `pip install watchdog`（自动监控 md 文件变化） |
+| **python-docx** | 可选 | — | `pip install python-docx`（辅助分析 docx 样式） |
+| **fswatch** | 可选（macOS） | — | `brew install fswatch` |
+| **inotify-tools** | 可选（Linux） | — | `sudo apt install inotify-tools` |
+
+### scientific-drawing
+
+#### TikZ 绘图
+
+| 依赖 | 类型 | 版本要求 | 安装方式 |
+|------|------|----------|----------|
+| **LaTeX 发行版**（xelatex） | 必需 | TeX Live 2020+ / MacTeX 2020+ | `brew install --cask mactex` / `sudo apt install texlive-xetex texlive-latex-extra` |
+| **xeCJK** | 必需 | 最新版 | TeX Live 自带 |
+| **fontspec** | 必需 | 最新版 | TeX Live 自带 |
+| **poppler-utils** | 必需 | 最新版 | `brew install poppler` / `sudo apt install poppler-utils` |
+| **中文字体** | 必需 | — | macOS 系统自带 PingFang SC；Linux: `sudo apt install fonts-noto-cjk`；或安装[思源黑体](https://fonts.google.com/noto) |
+
+#### Python matplotlib 绘图
+
+| 依赖 | 类型 | 版本要求 | 安装方式 |
+|------|------|----------|----------|
+| **Python** | 必需 | ≥ 3.8 | 系统自带或 `brew install python` |
+| **matplotlib** | 必需 | ≥ 3.5 | `pip install matplotlib` |
+| **numpy** | 可选 | ≥ 1.20 | `pip install numpy` |
+| **pandas** | 可选 | ≥ 1.3 | `pip install pandas` |
+| **latexmk** | 可选 | — | TeX Live 自带 |
+| **ImageMagick** | 可选 | — | `brew install imagemagick` |
+| **Ghostscript** | 可选 | — | `brew install ghostscript` |
+
+### writing-style-check
+
+| 依赖 | 类型 | 版本要求 | 安装方式 |
+|------|------|----------|----------|
+| **Python** | 必需 | ≥ 3.9 | 系统自带或 `brew install python` / `sudo apt install python3` |
+
+> 无第三方依赖，仅使用 Python 标准库。
+
+---
+
 ## 安装
 
 ### For Humans
