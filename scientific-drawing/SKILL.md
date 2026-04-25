@@ -88,69 +88,45 @@ ls figures/子目录/fig.svg
 **文件头部必须（每个脚本复制）：**
 ```python
 import matplotlib.pyplot as plt
-import matplotlib.font_manager as _fm
 import os, sys
 
-# ── 中文字体自动查找（优先思源黑体，Windows 回退至系统内置字体）─────────────
-def _find_cjk_font():
-    """按优先级搜索中文字体文件，返回路径或 None。"""
-    candidates = [
-        os.path.expanduser("~/Library/Fonts/SourceHanSansCN-Regular.ttf"),
-        os.path.expanduser("~/Library/Fonts/SourceHanSansSC-Regular.otf"),
-        "/Library/Fonts/SourceHanSansCN-Regular.ttf",
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/noto-cjk/NotoSansCJKsc-Regular.otf",
-        "/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc",
-        # Windows 内置中文字体
-        os.path.expandvars(r"%WINDIR%\Fonts\msyh.ttc"),    # 微软雅黑
-        os.path.expandvars(r"%WINDIR%\Fonts\simhei.ttf"),  # 黑体
-        "C:/Windows/Fonts/msyh.ttc",
-        "C:/Windows/Fonts/simhei.ttf",
-        # ↓ 如需使用其他字体，在此添加路径：
-        # "/path/to/your/font.ttf",
-    ]
-    for p in candidates:
-        if os.path.isfile(p):
-            return p
-    return None
-
-_font_path = _find_cjk_font()
-if _font_path:
-    _fm.fontManager.addfont(_font_path)
-else:
-    print("[scientific-drawing] ⚠️  未找到中文字体，中文可能显示为方块。\n"
-          "  macOS：brew install --cask font-source-han-sans\n"
-          "  Linux：sudo apt install fonts-noto-cjk\n"
-          "  Windows：系统已内置微软雅黑，若仍出现方块请重建字体缓存\n"
-          "  也可在 _find_cjk_font() 的 candidates 列表中添加自己的字体路径。",
-          file=sys.stderr)
-
-plt.rcParams['font.family']        = 'sans-serif'
-plt.rcParams['font.sans-serif']    = ['Source Han Sans CN', 'Noto Sans CJK SC',
-                                       'Microsoft YaHei', 'PingFang SC',
-                                       'SimHei', 'Arial Unicode MS', 'DejaVu Sans']
-plt.rcParams['axes.unicode_minus'] = False
-plt.rcParams['font.size']          = 13       # 小四 ≈ 13pt（正文对齐）
-plt.rcParams['axes.titlesize']     = 20
-plt.rcParams['axes.labelsize']     = 16
-plt.rcParams['xtick.labelsize']    = 13
-plt.rcParams['ytick.labelsize']    = 13
-plt.rcParams['legend.fontsize']    = 13
-plt.rcParams['figure.dpi']         = 150
-
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(_SCRIPT_DIR, ".."))   # 调整层级
-from color_palette import BLUE, RED, BLACK, GRID_COLOR, GRID_ALPHA, SPINE_COLOR, SPINE_WIDTH
+# 将 figures/ 目录加入路径，以便导入 theme_tokens
+sys.path.insert(0, os.path.join(_SCRIPT_DIR, ".."))
+
+from theme_tokens import get_theme, get_color, apply_matplotlib_theme, apply_axes_style
+
+# 一行完成：字体注册 + rcParams + 颜色 cycle（传 None 使用 default_theme）
+apply_matplotlib_theme()                          # 使用默认主题（schematic_general）
+# apply_matplotlib_theme("line_chart_general")   # 数据图时改为对应主题
+
+_theme = get_theme()   # 获取主题字典（可按需切换主题名）
 ```
 
-**axes 标准样式（每个图必须）：**
+> **向后兼容**：若已有脚本使用 `from color_palette import BLUE, ...`，无需修改。
+> `color_palette.py` 已改为内部调用 `theme_tokens`，常量值来自 `theme-tokens.json`。
+
+**axes 标准样式（推荐用辅助函数，每个图必须）：**
 ```python
+apply_axes_style(ax)          # 自动应用主题中的 spines/grid/tick 样式
+```
+
+或手动（与旧版等效）：
+```python
+from theme_tokens import get_shared
+_shared  = get_shared()
+_strokes = _shared["strokes"]
+_layout  = _shared["layout"]
+_colors  = _theme["colors"]
+_BLACK   = _colors.get("text", "#000000")
+_GRID    = _colors.get("grid", "#E5E5E5")
+
 ax.spines[["top", "right"]].set_visible(False)
 for sp in ["left", "bottom"]:
-    ax.spines[sp].set_color(SPINE_COLOR)
-    ax.spines[sp].set_linewidth(SPINE_WIDTH)
-ax.tick_params(axis="both", width=2.0, length=6, colors=BLACK, pad=5)
-ax.grid(True, ls=":", lw=2.0, color=GRID_COLOR, alpha=GRID_ALPHA)
+    ax.spines[sp].set_color(_BLACK)
+    ax.spines[sp].set_linewidth(_strokes["axis_width"])
+ax.tick_params(axis="both", width=_strokes["axis_width"], length=6, colors=_BLACK, pad=5)
+ax.grid(True, ls=":", lw=_strokes["line_width_thin"], color=_GRID, alpha=_layout["grid_alpha"])
 ```
 
 **保存（必须 SVG + bbox_inches="tight"）：**
@@ -161,35 +137,78 @@ plt.savefig(os.path.join(_SCRIPT_DIR, "fig.svg"), format="svg", bbox_inches="tig
 
 **legend（禁止同时传 prop 和 fontsize）：**
 ```python
-ax.legend(loc="upper right", frameon=True, framealpha=0.85,
-          edgecolor=BLACK, prop={'size': 13})   # ← 只用 prop，不加 fontsize=
+_shared = get_shared()
+ax.legend(loc="upper right", frameon=True,
+          framealpha=_shared["layout"]["legend_frame_alpha"],
+          edgecolor=get_color(_theme, "text"),
+          prop={'size': _shared["typography"]["legend_size_pt"]})
 ```
 
 ---
 
-## 4. 配色速查
+## 4. 配色选色规则
 
-**推荐：IEEE/Springer 深蓝 + 深灰**
+> **所有颜色从统一主题配置文件读取，不在代码或文档中硬编码 hex 值。**
+> 唯一颜色源：`references/theme-tokens.json`（以及由其生成的 `references/tikz-theme.tex`）。
+> 更新配色后运行 `python scripts/sync_theme_tokens.py` 即可让 TikZ/Python 同步生效。
+
+### 4.1 选主题规则
+
+| 图形类型 | 推荐主题键 | 说明 |
+|---|---|---|
+| 通用示意图 / 流程图 / 架构图 | `schematic_general` | 黑+蓝+橙三色核心，高对比，低饱和 |
+| 生物医学 / 机制图 | `biomedical_mechanism` | 暖色调，紫红强调，绿色辅助 |
+| 工程系统 / 流程图 | `engineering_schematic` | 深蓝主，冷色调，对比清晰 |
+| 折线图 / 曲线图 | `line_chart_general` | 6 系列色，色盲友好，推荐搭配线型+marker |
+| 连续数据 / 热图 | `continuous_data` | 单色相由浅到深的顺序色板 |
+| 正负偏差 / 相关性 | `diverging_data` | 双端对称，中间白/灰 |
+| 分类比较 / 柱状图 / 箱线图 | `categorical_comparison` | 最多 6 个定性色，色盲友好 |
+
+### 4.2 TikZ 使用方式
+
+在 preamble 中引入主题文件，直接使用预定义颜色命令：
+
 ```latex
-\definecolor{colPrimary}{RGB}{31,73,125}    % IEEE 深蓝
-\definecolor{colSecondary}{RGB}{64,64,64}   % 深灰
-\definecolor{colArrow}{RGB}{30,30,30}       % 近黑箭头
+\input{<skill-root>/scientific-drawing/references/tikz-theme.tex}
+
+% 使用主题颜色（schematic_general 默认）：
+\draw[draw=themePrimary, line width=\themeLineWidthMain] ...
+\node[themeNodePrimary] {模块名称};
+\draw[themeArrow] ...
 ```
 
-**Nature 低饱和（扇形图/饼图）**
-```latex
-\definecolor{clrGreen}{HTML}{8FBCB2}   % 灰绿
-\definecolor{clrBlue} {HTML}{8AAAC8}   % 灰蓝
-\definecolor{clrPurple}{HTML}{A99DC4}  % 灰紫
-\definecolor{clrWarm} {HTML}{C8AD8A}   % 灰暖
-```
+可用颜色命令（由主题文件定义）：
+- 结构色：`\themeText`、`\themeOutline`、`\themeSecondaryText`、`\themeFillNeutral`
+- 主色：`\themePrimary`、`\themeAccentOne`、`\themeAccentTwo`、`\themeAccentThree`、`\themeWarning`
+- 数据系列：`\themeSeriesNumOne` … `\themeSeriesNumSix`
+- 顺序色板：`\themeSeqLow` … `\themeSeqMax`
+- 发散色板：`\themeDivNegStrong` … `\themeDivPosStrong`
 
-**Python 主色板（`figures/color_palette.py` 统一导入）**
+### 4.3 Python 使用方式
+
 ```python
-BLUE="#1D4ED8"  RED="#DC2626"  GREEN="#16A34A"  AMBER="#F59E0B"  PURPLE="#7C3AED"
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from theme_tokens import get_theme, get_color, apply_matplotlib_theme
+
+# 一行完成字体 + rcParams + 颜色 cycle 设置
+apply_matplotlib_theme("line_chart_general")
+
+# 手动取色
+theme   = get_theme("schematic_general")
+primary = get_color(theme, "primary")
 ```
 
-**禁止色**：`#999999`、`#CCCCCC`、`#EEEEEE` 等浅灰；纯原色 `#FF0000`、`#00FF00`；4 色以上混用。
+向后兼容：已有脚本通过 `from color_palette import BLUE, ...` 导入的，无需修改，
+`color_palette.py` 内部已改为从 `theme_tokens` 读取。
+
+### 4.4 禁止事项
+
+- 禁止在 `.tex`/`.py` 内硬编码 hex 值——所有色值从主题文件引用
+- 禁止浅灰（`#999999`、`#CCCCCC`、`#EEEEEE` 等低对比度灰）
+- 禁止纯原色（`#FF0000`、`#00FF00`、`#0000FF`）
+- 禁止 rainbow / jet 色带
+- 示意图色相数 ≤ 5；数据图色相数 ≤ 4（多系列时用线型+marker 补充区分）
 
 ---
 
@@ -376,9 +395,17 @@ task(
   - 何时读：节点形状 / 箭头（fan-in、fan-out、交叉标注）/ 层标签 / fit框 / 背景层 / 扇形图 / 同心圆 / 分隔线 / 要素级 Bug 速查表
 - **matplotlib 全规则**：[references/matplotlib-rules.md](references/matplotlib-rules.md)
   - 何时读：字体注册 / legend / spines / 输出 / 踩坑修复
+- **统一主题配置（唯一颜色源）**：[references/theme-tokens.json](references/theme-tokens.json)
+  - 何时读：**所有配色均从此文件读取**；新增/修改主题；查看各主题 colors/strokes/typography/layout token
+- **TikZ 主题定义文件**：[references/tikz-theme.tex](references/tikz-theme.tex)
+  - 何时读：TikZ 图中 `\input` 此文件以使用主题颜色命令；**由 sync 脚本自动生成，不要手动编辑**
+- **Python 主题模块**：[figures/theme_tokens.py](figures/theme_tokens.py)
+  - 何时读：matplotlib 脚本中 `from theme_tokens import ...`；查看可用 API
+- **主题体系说明**：[references/theme-system.md](references/theme-system.md)
+  - 何时读：如何新增/切换主题，如何同步到 TikZ/Python，向后兼容说明
 - **配色规范**：[references/color-standards.md](references/color-standards.md)
-  - 何时读：选色原则 / 图形类型选色 / TikZ 色板 / 标注文字配色 / Python 降饱和工具
-- **配色 JSON 参考库**：[references/color-palettes.json](references/color-palettes.json)
-  - 何时读：需要具体 hex 值 / 选主题色板（`themes.*`）/ 定性、顺序、发散色板数组
+  - 何时读：选色原则 / 图形类型选色 / 标注文字配色 / Python 降饱和工具
+- **配色 JSON 参考库（历史参考，已被 theme-tokens.json 取代）**：[references/color-palettes.json](references/color-palettes.json)
+  - 何时读：查阅原始主题色板来源；定性、顺序、发散色板数组
 - **编译与导出**：[references/compile-export.md](references/compile-export.md)
   - 何时读：编译命令 / PDF→SVG / 清理 / macOS cairo 问题
