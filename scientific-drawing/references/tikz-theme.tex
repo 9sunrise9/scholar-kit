@@ -1,0 +1,100 @@
+% tikz-theme.tex — 统一 TikZ 主题定义
+% 自动生成于 2026-04-25 07:00 UTC，由 scripts/sync_theme_tokens.py 从 references/theme-tokens.json 生成。
+% 请勿手动编辑；修改 theme-tokens.json 后重新运行同步脚本。
+%
+% 当前默认主题：schematic_general
+%
+% 用法（在 TikZ 文档 preamble 中）：
+%   \input{<skill-root>/scientific-drawing/references/tikz-theme.tex}
+
+% ── 默认主题颜色 ─────────────────────────────────────────────────────────────
+\definecolor{themeBackground}{HTML}{FFFFFF}
+\definecolor{themeText}{HTML}{000000}
+\definecolor{themeSecondaryText}{HTML}{4D4D4D}
+\definecolor{themeOutline}{HTML}{4D4D4D}
+\definecolor{themeFillNeutral}{HTML}{D9D9D9}
+\definecolor{themeGrid}{HTML}{E5E5E5}
+\definecolor{themePrimary}{HTML}{0072B2}
+\definecolor{themeAccentOne}{HTML}{E69F00}
+\definecolor{themeAccentTwo}{HTML}{009E73}
+\definecolor{themeAccentThree}{HTML}{CC79A7}
+\definecolor{themeWarning}{HTML}{D55E00}
+\definecolor{themeAxis}{HTML}{000000}
+
+% ── 数据图系列色（line_chart_general）───────────────────────────────────────
+\definecolor{themeSeriesNumOne}{HTML}{0072B2}
+\definecolor{themeSeriesNumTwo}{HTML}{E69F00}
+\definecolor{themeSeriesNumThree}{HTML}{009E73}
+\definecolor{themeSeriesNumFour}{HTML}{CC79A7}
+\definecolor{themeSeriesNumFive}{HTML}{D55E00}
+\definecolor{themeSeriesNumSix}{HTML}{56B4E9}
+
+% ── 顺序色板（continuous_data）─────────────────────────────────────────────
+\definecolor{themeSeqLow}{HTML}{EAF3FF}
+\definecolor{themeSeqLowMid}{HTML}{CFE3FF}
+\definecolor{themeSeqMid}{HTML}{9CC7FF}
+\definecolor{themeSeqHighMid}{HTML}{5BA5FF}
+\definecolor{themeSeqHigh}{HTML}{2E7DFF}
+\definecolor{themeSeqMax}{HTML}{005BBB}
+
+% ── 发散色板（diverging_data）───────────────────────────────────────────────
+\definecolor{themeDivNegStrong}{HTML}{2166AC}
+\definecolor{themeDivNegMid}{HTML}{67A9CF}
+\definecolor{themeDivNegSoft}{HTML}{D1E5F0}
+\definecolor{themeDivCenter}{HTML}{F7F7F7}
+\definecolor{themeDivPosSoft}{HTML}{FDDBC7}
+\definecolor{themeDivPosMid}{HTML}{EF8A62}
+\definecolor{themeDivPosStrong}{HTML}{B2182B}
+
+% ── 线宽常量 ─────────────────────────────────────────────────────────────────
+\newcommand{\themeLineWidthMain}{2.4pt}
+\newcommand{\themeLineWidthMinor}{1.6pt}
+\newcommand{\themeLineWidthThin}{1.0pt}
+\newcommand{\themeAxisWidth}{2.0pt}
+\newcommand{\themeArrowWidth}{1.8pt}
+\newcommand{\themeNodeBorderWidth}{1.6pt}
+
+% ── TikZ 通用样式 ────────────────────────────────────────────────────────────
+\tikzset{
+  themeNode/.style={
+    rectangle, rounded corners=4pt,
+    draw=themeOutline, line width=\themeNodeBorderWidth,
+    fill=white, text=themeText,
+    font=\normalsize, align=center,
+    minimum width=3.0cm, minimum height=0.8cm
+  },
+  themeNodePrimary/.style={
+    themeNode,
+    draw=themePrimary, fill=themeSeqLow, text=themeText
+  },
+  themeNodeAccent/.style={
+    themeNode,
+    draw=themeAccentOne, fill=white, text=themeText
+  },
+  themeArrow/.style={
+    -Stealth, line width=\themeArrowWidth, draw=themeText
+  },
+  themeArrowPrimary/.style={
+    themeArrow, draw=themePrimary
+  },
+  themeArrowWarning/.style={
+    themeArrow, draw=themeWarning
+  },
+  themeDashed/.style={
+    dashed, line width=\themeLineWidthMinor, draw=themeOutline
+  },
+  themeDotted/.style={
+    dotted, line width=\themeLineWidthMinor, draw=themeOutline
+  },
+  themeBox/.style={
+    draw=themeOutline, dashed, line width=\themeLineWidthThin,
+    fill=themeFillNeutral, fill opacity=0.3,
+    rounded corners=6pt
+  },
+  themeEllipse/.style={
+    ellipse, draw=themeOutline, line width=\themeNodeBorderWidth,
+    fill=themeSeqLow, text=themeText,
+    font=\normalsize, align=center,
+    minimum width=2.8cm, minimum height=0.9cm
+  }
+}
