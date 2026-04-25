@@ -35,7 +35,7 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 | 技能 | 依赖工具 |
 |------|---------|
 | academic-writing    | `curl` 、 `tar` （下载必需）、 `pandoc` 、 `python3` |
-| scientific-drawing  | `curl` 、 `tar` （下载必需）、 `python3` |
+| scientific-drawing  | `curl` 、 `tar` （下载必需）、 `python3` 、中文字体（见下方说明） |
 | writing-style-check | `curl` 、 `tar` （下载必需）、 `python3` |
 
 检测方式：在终端执行 `command -v <工具名>` ，有输出则表示已安装。Windows 下使用 `where <工具名>` 。
@@ -88,6 +88,41 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 | Ubuntu / Debian | `apt-get` |
 | Fedora / RHEL | `dnf` |
 | Windows | 提示手动安装，附官网链接 |
+
+---
+
+### Step 1.6 — 检查绘图中文字体（仅 scientific-drawing）
+
+若用户选择了 `scientific-drawing`，在工具依赖检查完成后，额外检测中文字体是否可用。
+
+**检测方式**：
+
+- macOS / Linux（有 `fc-list`）：执行 `fc-list 2>/dev/null | grep -i "source han\|noto.*cjk"` 是否有输出
+- 或检查以下常见路径是否存在字体文件：
+  - `~/Library/Fonts/SourceHanSansCN-Regular.ttf`
+  - `/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc`（Linux）
+
+**检测结果处理**：
+
+* 若检测到思源黑体 / Noto CJK：提示 `✓` 并继续。
+* 若未检测到：展示以下提示（**非阻断**，用户确认后继续安装）：
+
+```
+ℹ️  未检测到思源黑体（Source Han Sans CN）
+   scientific-drawing 的 matplotlib 模板默认使用思源黑体显示中文，
+   未安装时中文可能显示为方块符号。
+
+推荐安装方式：
+  macOS：  brew install --cask font-source-han-sans
+  Ubuntu： sudo apt install fonts-noto-cjk
+  手动：   https://github.com/adobe-fonts/source-han-sans/releases
+
+也可安装任意中文字体后，在绘图脚本的 _find_cjk_font() 中添加字体路径。
+
+已了解，继续安装 [回车确认]
+```
+
+> 字体缺失不会阻断安装，技能文件仍会正常下载。缺少字体只影响 matplotlib 图表的中文显示；TikZ 图表在 macOS 上可使用内置 PingFang SC 正常渲染。
 
 ---
 

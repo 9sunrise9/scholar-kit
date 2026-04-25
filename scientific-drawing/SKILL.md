@@ -91,11 +91,37 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as _fm
 import os, sys
 
-_SANS_PATH = "/Users/sunyue/Library/Fonts/SourceHanSansCN-Regular.ttf"
-_fm.fontManager.addfont(_SANS_PATH)           # 必须在 rcParams 之前
+# ── 中文字体自动查找（思源黑体优先，可自行替换路径）───────────────────────
+def _find_cjk_font():
+    """按优先级搜索思源黑体 / Noto CJK 字体文件，返回路径或 None。"""
+    candidates = [
+        os.path.expanduser("~/Library/Fonts/SourceHanSansCN-Regular.ttf"),
+        os.path.expanduser("~/Library/Fonts/SourceHanSansSC-Regular.otf"),
+        "/Library/Fonts/SourceHanSansCN-Regular.ttf",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/noto-cjk/NotoSansCJKsc-Regular.otf",
+        "/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc",
+        # ↓ 如需使用其他字体，在此添加路径：
+        # "/path/to/your/font.ttf",
+    ]
+    for p in candidates:
+        if os.path.isfile(p):
+            return p
+    return None
+
+_font_path = _find_cjk_font()
+if _font_path:
+    _fm.fontManager.addfont(_font_path)
+else:
+    print("[scientific-drawing] ⚠️  未找到思源黑体，中文可能显示为方块。\n"
+          "  安装：brew install --cask font-source-han-sans  "
+          "（或 sudo apt install fonts-noto-cjk）\n"
+          "  也可在 _find_cjk_font() 的 candidates 列表中添加自己的字体路径。",
+          file=sys.stderr)
 
 plt.rcParams['font.family']        = 'sans-serif'
-plt.rcParams['font.sans-serif']    = ['Source Han Sans CN', 'PingFang SC', 'Arial Unicode MS', 'DejaVu Sans']
+plt.rcParams['font.sans-serif']    = ['Source Han Sans CN', 'Noto Sans CJK SC',
+                                       'PingFang SC', 'Arial Unicode MS', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['font.size']          = 13       # 小四 ≈ 13pt（正文对齐）
 plt.rcParams['axes.titlesize']     = 20

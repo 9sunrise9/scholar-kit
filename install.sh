@@ -83,6 +83,56 @@ auto_install_cmd() {
   fi
 }
 
+# 检查中文字体（思源黑体 / Noto CJK）是否可用
+# 仅提示，不阻断安装（返回值始终为 0）
+check_cjk_font() {
+  # 方法 1：fc-list（Linux / macOS with fontconfig）
+  if command -v fc-list &>/dev/null; then
+    if fc-list 2>/dev/null | grep -qi "source han\|noto.*cjk\|notosans.*cjk"; then
+      echo "  ✓ 已检测到思源黑体 / Noto CJK 字体"
+      return 0
+    fi
+  fi
+
+  # 方法 2：检查常见字体文件路径
+  local _font_paths=(
+    "$HOME/Library/Fonts/SourceHanSansCN-Regular.ttf"
+    "$HOME/Library/Fonts/SourceHanSansSC-Regular.otf"
+    "/Library/Fonts/SourceHanSansCN-Regular.ttf"
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+    "/usr/share/fonts/noto-cjk/NotoSansCJKsc-Regular.otf"
+    "/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc"
+  )
+  for _p in "${_font_paths[@]}"; do
+    if [[ -f "$_p" ]]; then
+      echo "  ✓ 已检测到中文字体：$_p"
+      return 0
+    fi
+  done
+
+  # 未找到任何已知中文字体
+  echo ""
+  echo "  ℹ️  未检测到思源黑体（Source Han Sans CN）"
+  echo "     scientific-drawing 的 matplotlib 模板默认使用思源黑体显示中文，"
+  echo "     未安装时中文可能显示为方块符号。"
+  echo ""
+  echo "  推荐安装方式："
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "    Homebrew：brew install --cask font-source-han-sans"
+    echo "    手动下载：https://github.com/adobe-fonts/source-han-sans/releases"
+    echo "    （macOS 内置 PingFang SC，TikZ 图表中文可正常显示）"
+  else
+    echo "    Ubuntu/Debian：sudo apt install fonts-noto-cjk"
+    echo "    Fedora：        sudo dnf install google-noto-sans-cjk-fonts"
+    echo "    手动下载：      https://github.com/adobe-fonts/source-han-sans/releases"
+  fi
+  echo ""
+  echo "  也可安装任意中文字体后，在绘图脚本顶部修改字体路径即可。"
+  echo ""
+  read -r -p "  已了解，继续安装 [回车确认] " _ignored
+  return 0
+}
+
 # 检查单个依赖；缺失时询问是否安装
 # 返回 0 表示可用，返回 1 表示仍缺失
 check_dep() {
@@ -236,6 +286,18 @@ else
       exit 0
     fi
   fi
+fi
+
+# 字体检查（scientific-drawing 专属）
+_need_font_check=false
+for _s in "${SELECTED_SKILLS[@]}"; do
+  [[ "$_s" == "scientific-drawing" ]] && _need_font_check=true && break
+done
+if [[ "$_need_font_check" == "true" ]]; then
+  print_divider
+  echo "Step 1.6 — 检查绘图所需中文字体..."
+  echo ""
+  check_cjk_font
 fi
 
 # Step 2: 选工具（循环直到有至少一个可用）
