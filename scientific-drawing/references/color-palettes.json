@@ -1,0 +1,255 @@
+{
+  "_comment": "科研绘图配色 JSON 参考库 — 来源：reference.md 整理提炼",
+
+  "neutral": {
+    "black":      "#000000",
+    "dark_gray":  "#4D4D4D",
+    "gray":       "#808080",
+    "light_gray": "#D9D9D9",
+    "white":      "#FFFFFF"
+  },
+
+  "qualitative": {
+    "blue":      "#0072B2",
+    "orange":    "#E69F00",
+    "green":     "#009E73",
+    "yellow":    "#F0E442",
+    "red":       "#D55E00",
+    "purple":    "#CC79A7",
+    "sky_blue":  "#56B4E9",
+    "teal":      "#00A6A6"
+  },
+
+  "pairs": {
+    "pair_1": ["#0072B2", "#E69F00"],
+    "pair_2": ["#56B4E9", "#D55E00"],
+    "pair_3": ["#009E73", "#CC79A7"],
+    "pair_4": ["#000000", "#D9D9D9"]
+  },
+
+  "sequential_blue": {
+    "_comment": "单色相顺序色板（由浅到深），适用于连续数据/强度图",
+    "level_1": "#EAF3FF",
+    "level_2": "#CFE3FF",
+    "level_3": "#9CC7FF",
+    "level_4": "#5BA5FF",
+    "level_5": "#2E7DFF",
+    "level_6": "#005BBB"
+  },
+
+  "diverging_blue_red": {
+    "_comment": "发散色板，适用于正负偏差/相关性/差值图",
+    "negative_strong": "#2166AC",
+    "negative_mid":    "#67A9CF",
+    "negative_soft":   "#D1E5F0",
+    "center":          "#F7F7F7",
+    "positive_soft":   "#FDDBC7",
+    "positive_mid":    "#EF8A62",
+    "positive_strong": "#B2182B"
+  },
+
+  "core_minimum": {
+    "_comment": "最小核心版 — 覆盖示意图与数据图的基础需求",
+    "schematic": {
+      "background":    "#FFFFFF",
+      "text":          "#000000",
+      "structure":     "#4D4D4D",
+      "neutral_fill":  "#D9D9D9",
+      "primary":       "#0072B2",
+      "accent_1":      "#E69F00",
+      "accent_2":      "#009E73",
+      "accent_3":      "#CC79A7",
+      "warning":       "#D55E00"
+    },
+    "data": {
+      "qualitative": ["#0072B2","#E69F00","#009E73","#CC79A7","#D55E00","#56B4E9"],
+      "sequential":  ["#EAF3FF","#CFE3FF","#9CC7FF","#5BA5FF","#2E7DFF","#005BBB"],
+      "diverging":   ["#2166AC","#67A9CF","#D1E5F0","#F7F7F7","#FDDBC7","#EF8A62","#B2182B"]
+    },
+    "rules": [
+      "avoid rainbow and jet",
+      "avoid neon colors",
+      "use grayscale-safe design",
+      "combine color with line style and marker",
+      "keep color meanings consistent across figures"
+    ]
+  },
+
+  "themes": {
+    "schematic_general": {
+      "type": "schematic",
+      "goal": "clear logic, low saturation, high contrast",
+      "palette": {
+        "background":     "#FFFFFF",
+        "text":           "#000000",
+        "secondary_text": "#4D4D4D",
+        "outline":        "#4D4D4D",
+        "fill_neutral":   "#D9D9D9",
+        "primary":        "#0072B2",
+        "accent_1":       "#E69F00",
+        "accent_2":       "#009E73",
+        "accent_3":       "#CC79A7",
+        "warning":        "#D55E00"
+      },
+      "usage": {
+        "main_structure":        ["#000000","#4D4D4D","#D9D9D9"],
+        "key_path":              ["#0072B2"],
+        "highlight":             ["#E69F00"],
+        "supporting_module":     ["#009E73","#CC79A7"],
+        "warning_or_inhibition": ["#D55E00"]
+      },
+      "rules": [
+        "use at most 5 visible colors in one schematic",
+        "prefer arrows, positions, and labels over color-only meaning",
+        "ensure grayscale readability"
+      ]
+    },
+
+    "biomedical_mechanism": {
+      "type": "schematic",
+      "goal": "mechanistic clarity with scientific restraint",
+      "palette": {
+        "background":     "#FFFFFF",
+        "text":           "#000000",
+        "cell_or_tissue": "#D9D9D9",
+        "pathway_active": "#0072B2",
+        "pathway_support":"#009E73",
+        "treatment":      "#E69F00",
+        "inhibition":     "#D55E00",
+        "marker":         "#CC79A7"
+      },
+      "usage": {
+        "control":    "#808080",
+        "activation": "#0072B2",
+        "suppression":"#D55E00",
+        "treatment":  "#E69F00",
+        "biomarker":  "#CC79A7"
+      },
+      "rules": [
+        "avoid neon greens and intense reds",
+        "do not use more than one warning color",
+        "keep all labels in black or dark gray"
+      ]
+    },
+
+    "engineering_schematic": {
+      "type": "schematic",
+      "goal": "process clarity and structural hierarchy",
+      "palette": {
+        "background":    "#FFFFFF",
+        "text":          "#000000",
+        "structure":     "#4D4D4D",
+        "material_a":    "#0072B2",
+        "material_b":    "#E69F00",
+        "material_c":    "#009E73",
+        "process_flow":  "#56B4E9",
+        "failure_alert": "#D55E00"
+      },
+      "usage": {
+        "base":      ["#000000","#4D4D4D","#D9D9D9"],
+        "materials": ["#0072B2","#E69F00","#009E73"],
+        "process":   ["#56B4E9"],
+        "alert":     ["#D55E00"]
+      },
+      "rules": [
+        "prefer color to distinguish material classes, not decorative regions",
+        "ensure all filled shapes remain clear in grayscale",
+        "use line style and stroke width to reinforce hierarchy"
+      ]
+    },
+
+    "line_chart_general": {
+      "type": "data",
+      "goal": "series separation with print-safe contrast",
+      "palette": {
+        "background": "#FFFFFF",
+        "axis":       "#000000",
+        "grid":       "#E5E5E5",
+        "series_1":   "#0072B2",
+        "series_2":   "#E69F00",
+        "series_3":   "#009E73",
+        "series_4":   "#CC79A7",
+        "series_5":   "#D55E00",
+        "series_6":   "#56B4E9"
+      },
+      "usage": {
+        "best_for":   ["2_series","3_series","4_series","5_series"],
+        "line_width": "medium_to_bold",
+        "marker":     "recommended",
+        "legend":     "simple_and_short"
+      },
+      "rules": [
+        "combine color with line style and marker",
+        "keep maximum clarity in grayscale",
+        "do not use rainbow colormap"
+      ]
+    },
+
+    "continuous_data": {
+      "type": "data",
+      "goal": "single-hue monotonic progression",
+      "palette": {
+        "low":      "#EAF3FF",
+        "low_mid":  "#CFE3FF",
+        "mid":      "#9CC7FF",
+        "high_mid": "#5BA5FF",
+        "high":     "#2E7DFF",
+        "max":      "#005BBB"
+      },
+      "usage": {
+        "best_for":       ["intensity_map","trend_strength","continuous_score"],
+        "preferred_hue":  "blue",
+        "alternative_hue":"gray"
+      },
+      "rules": [
+        "use sequential palettes only",
+        "avoid categorical or rainbow schemes",
+        "preserve monotonic perception"
+      ]
+    },
+
+    "diverging_data": {
+      "type": "data",
+      "goal": "positive-negative deviation around neutral center",
+      "palette": {
+        "negative_strong": "#2166AC",
+        "negative_mid":    "#67A9CF",
+        "negative_soft":   "#D1E5F0",
+        "center":          "#F7F7F7",
+        "positive_soft":   "#FDDBC7",
+        "positive_mid":    "#EF8A62",
+        "positive_strong": "#B2182B"
+      },
+      "usage": {
+        "best_for":     ["delta","difference","correlation_shift","deviation"],
+        "center_value": "neutral_gray"
+      },
+      "rules": [
+        "place neutral value at the center",
+        "ensure both sides have balanced perceptual contrast",
+        "avoid using vivid green-red diverging palettes"
+      ]
+    },
+
+    "categorical_comparison": {
+      "type": "data",
+      "goal": "distinct categorical separation",
+      "palette": {
+        "cat_1": "#0072B2",
+        "cat_2": "#E69F00",
+        "cat_3": "#009E73",
+        "cat_4": "#CC79A7",
+        "cat_5": "#D55E00",
+        "cat_6": "#56B4E9"
+      },
+      "usage": {
+        "best_for": ["bar_chart","grouped_scatter","multi_line","boxplot_groups"]
+      },
+      "rules": [
+        "use the same category color across all figures in the paper",
+        "if more than 6 categories are needed, add line style, fill pattern, or marker",
+        "do not rely on color alone"
+      ]
+    }
+  }
+}
