@@ -80,11 +80,11 @@ scholar-kit/
 
 ### 安装通用依赖（所有技能均需）
 
-| 工具 | 说明 | 安装方式 |
-|------|------|---------|
-| `curl` | 下载安装包 | `brew install curl` / `sudo apt install curl` |
-| `tar` | 解压安装包 | 系统自带 |
-| `python3` | 运行辅助脚本 | `brew install python` / `sudo apt install python3` |
+| 工具 | 说明 | macOS | Ubuntu / Debian | Windows |
+|------|------|-------|-----------------|---------|
+| `curl` | 下载安装包 | `brew install curl` | `sudo apt install curl` | Windows 10 build 17063+ 内置 |
+| `tar` | 解压安装包 | 系统自带 | 系统自带 | Windows 10 build 17063+ 内置 |
+| `python3` | 运行辅助脚本 | `brew install python` | `sudo apt install python3` | `winget install Python.Python.3` 或 [python.org](https://www.python.org/downloads/) |
 
 ---
 
@@ -92,10 +92,10 @@ scholar-kit/
 
 **必需**
 
-| 工具 | 版本要求 | 安装方式 |
-|------|---------|---------|
-| `pandoc` | ≥ 3.0 | `brew install pandoc` / `sudo apt install pandoc` / [pandoc.org](https://pandoc.org/installing.html) |
-| `python3` | ≥ 3.9 | 系统自带或 `brew install python` |
+| 工具 | 版本要求 | macOS | Ubuntu / Debian | Windows |
+|------|---------|-------|-----------------|---------|
+| `pandoc` | ≥ 3.0 | `brew install pandoc` | `sudo apt install pandoc` | `winget install JohnMacFarlane.Pandoc` 或 [pandoc.org](https://pandoc.org/installing.html) |
+| `python3` | ≥ 3.9 | `brew install python` | `sudo apt install python3` | `winget install Python.Python.3` 或 [python.org](https://www.python.org/downloads/) |
 
 **可选**
 
@@ -112,26 +112,28 @@ scholar-kit/
 
 **TikZ 绘图**
 
-| 工具 | 版本要求 | 安装方式 |
-|------|---------|---------|
-| LaTeX 发行版（xelatex） | TeX Live 2020+ / MacTeX 2020+ | `brew install --cask mactex` / `sudo apt install texlive-xetex texlive-latex-extra` |
-| `poppler-utils` | 最新版 | `brew install poppler` / `sudo apt install poppler-utils` |
+| 工具 | 版本要求 | macOS | Ubuntu / Debian | Windows |
+|------|---------|-------|-----------------|---------|
+| LaTeX 发行版（xelatex） | TeX Live 2020+ / MacTeX 2020+ | `brew install --cask mactex` | `sudo apt install texlive-xetex texlive-latex-extra` | `winget install MiKTeX.MiKTeX` 或 [miktex.org](https://miktex.org/download) |
+| `poppler-utils` | 最新版 | `brew install poppler` | `sudo apt install poppler-utils` | `winget install oschwartz10612.poppler` 或 [poppler releases](https://github.com/oschwartz10612/poppler-windows/releases) |
 
 **Python matplotlib 绘图**
 
 | 工具 | 版本要求 | 安装方式 |
 |------|---------|---------|
-| `python3` | ≥ 3.8 | 系统自带或 `brew install python` |
+| `python3` | ≥ 3.8 | 系统自带或 `brew install python` / `winget install Python.Python.3` |
 | `matplotlib` | ≥ 3.5 | `pip install matplotlib` |
 | `numpy` | ≥ 1.20（可选） | `pip install numpy` |
 | `pandas` | ≥ 1.3（可选） | `pip install pandas` |
 
 **中文字体**
 
-| 字体 | 获取方式 |
-|------|---------|
-| PingFang SC | macOS 系统自带 |
-| Source Han Sans CN（思源黑体） | `brew install font-source-han-sans-cn` / `sudo apt install fonts-noto-cjk` |
+| 字体 | macOS | Ubuntu / Debian | Windows |
+|------|-------|-----------------|---------|
+| PingFang SC | 系统自带 | — | — |
+| Microsoft YaHei（微软雅黑） | — | — | 系统自带（Windows Vista+） |
+| SimHei（黑体） | — | — | 系统自带 |
+| Source Han Sans CN（思源黑体） | `brew install --cask font-source-han-sans` | `sudo apt install fonts-noto-cjk` | [手动下载](https://github.com/adobe-fonts/source-han-sans/releases) |
 
 **可选工具**
 
