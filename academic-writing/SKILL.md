@@ -301,6 +301,92 @@ $$
 
 ---
 
+## 5a. 中文 LaTeX：ctex + xelatex 专属事项
+
+> 适用场景：文稿包含中文正文（专著、教材、中文期刊）。
+
+### 文档类选择
+
+| 用途 | 文档类 |
+|---|---|
+| 专著 / 技术报告 | `ctexrep` |
+| 期刊 / 短文 | `ctexart` |
+| 书籍 | `ctexbook` |
+
+**禁止**在中文文稿中使用通用 `report`/`article` 文档类（字体/字符支持不完整）。
+
+### convert.sh 中文 tex 路径模板
+
+```bash
+pandoc "$INPUT_MD" \
+  -f markdown+tex_math_dollars \
+  --standalone \
+  --lua-filter="$SCRIPT_DIR/format_filter.lua" \
+  --top-level-division=chapter \
+  -V documentclass=ctexrep \
+  -o "$OUTPUT_TEX"
+
+# 后处理：移除 xelatex 下不兼容包、冗余 pandoc 宏、修正图片路径
+sed -i.bak \
+  -e '/\\usepackage\[T1\]{fontenc}/d' \
+  -e '/\\usepackage{newtxtext/d' \
+  -e '/\\usepackage{newtxmath/d' \
+  -e '/\\newtheorem{problem}/d' \
+  -e '/\\setcounter{secnumdepth}{0}/d' \
+  -e 's|{\.\.\/docx_tex\/figures\/|{figures/|g' \
+  "$OUTPUT_TEX"
+rm -f "${OUTPUT_TEX}.bak"
+```
+
+> **注意**：
+> - **禁止**传 `-V lang=zh-CN`，这会触发 pandoc 调用 polyglossia 并生成 `\setmainlanguage[]{}` 空参命令，导致 xelatex 报错 `End of environment '' already defined`。
+> - ctexrep 已自动处理中文字体与断行，无需手动配置 xeCJK。
+
+### pandoc `--standalone` 注入的冗余宏（需清理）
+
+pandoc 的默认 LaTeX 模板每次都会在 tex 开头注入以下内容，专著/嵌入场景下必须清理：
+
+| 宏 | 问题 |
+|---|---|
+| `\usepackage[T1]{fontenc}` | 与 xelatex 不兼容，导致中文字符无法渲染 |
+| `\usepackage{newtxtext}` / `newtxmath` | Latin 字体包，xelatex 下冲突 |
+| `\newtheorem{problem}{Problem}` | 嵌入专著时若主文件已定义 `problem` 环境则报错 |
+| `\setcounter{secnumdepth}{0}` | 关闭全文章节编号，嵌入专著会破坏主文件编号 |
+
+上述 `sed -i.bak` 命令已包含对所有四类宏的清理。
+
+### 图片路径规范
+
+tex 文件在 `docx_tex/` 目录，图片在 `docx_tex/figures/`。  
+md 中图片路径**必须**写为相对于 tex 文件位置：`figures/fig_1/fig.pdf`。  
+**禁止**从 md 目录相对引用（`../docx_tex/figures/...`）——虽然偶尔因编译 cwd 巧合正确，但路径语义是错的。
+
+若历史 md 已使用 `../docx_tex/` 前缀，上述 `sed -i.bak` 中的最后一条规则已统一替换。
+
+### 编译命令
+
+```bash
+# 优先 latexmk（自动处理交叉引用轮次）
+(cd "$PROJECT_ROOT/docx_tex" && latexmk -xelatex -interaction=nonstopmode -halt-on-error "$TEX_BASENAME")
+
+# 备用（需运行两次处理交叉引用）
+(cd "$PROJECT_ROOT/docx_tex" && xelatex -interaction=nonstopmode -halt-on-error "$TEX_BASENAME")
+(cd "$PROJECT_ROOT/docx_tex" && xelatex -interaction=nonstopmode -halt-on-error "$TEX_BASENAME")
+```
+
+### `sed -i` 跨平台说明
+
+macOS 的 `sed -i ''` 与 Linux 的 `sed -i` 语法不兼容。统一写法：
+
+```bash
+# 跨平台安全写法（macOS 和 Linux 均适用）
+sed -i.bak -e '...' FILE && rm -f FILE.bak
+```
+
+**禁止**直接使用 `sed -i ''`（macOS only，Linux 下报错）。
+
+---
+
 ## 6. 辅助脚本参考
 
 ### 6.4 watch.sh（watchdog，推荐）
