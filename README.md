@@ -5,6 +5,7 @@
 * 学术文稿格式转换（Markdown → docx / LaTeX）
 * 学术图表绘制（TikZ / matplotlib）
 * 学术写作风格检查（规则化检测与报告）
+* 草稿占位符填充（【...】语义补全与术语规范化）
 
 兼容 **Claude Code**、**OpenCode**、**GitHub Copilot**、**Codex** 等主流 AI 编程助手。
 
@@ -17,6 +18,7 @@
 | `academic-writing` | Markdown → docx / LaTeX 格式转换，pandoc 驱动 | "帮我把 md 转成 docx"、"导出 LaTeX" |
 | `scientific-drawing` | TikZ / matplotlib 学术图表生成 | "画图"、"生成架构图"、"绘制流程图" |
 | `writing-style-check` | 学术正文风格检查，输出可执行修改建议 | "检查写作规范"、"润色论文"、"风格检查" |
+| `draft-placeholder-filler` | 识别并填充正文草稿中的【...】占位符，按提示语义改写 | "填充占位符"、"处理【】"、"补全草稿" |
 
 ---
 
@@ -62,6 +64,9 @@ scholar-kit/
 │   ├── SKILL.md                # 技能入口（AI 自动加载）
 │   ├── README.md
 │   └── scripts/                # pandoc 转换辅助脚本
+├── draft-placeholder-filler/
+│   ├── SKILL.md
+│   └── README.md
 ├── scientific-drawing/
 │   ├── SKILL.md
 │   ├── README.md
@@ -150,6 +155,14 @@ scholar-kit/
 | 工具 | 版本要求 | 说明 |
 |------|---------|------|
 | `python3` | ≥ 3.9 | 仅使用标准库，无需额外安装第三方包 |
+
+---
+
+### draft-placeholder-filler
+
+| 工具 | 版本要求 | 说明 |
+|------|---------|------|
+| 无额外依赖 | - | 仅依赖通用工具 `curl` 与 `tar` 进行安装 |
 
 ---
 

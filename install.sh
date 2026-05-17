@@ -14,11 +14,12 @@ fi
 REPO_BASE="https://raw.githubusercontent.com/sunyue/scholar-kit/main"
 REPO_ARCHIVE="https://github.com/sunyue/scholar-kit/archive/refs/heads/main.tar.gz"
 
-ALL_SKILLS=("academic-writing" "scientific-drawing" "writing-style-check")
+ALL_SKILLS=("academic-writing" "scientific-drawing" "writing-style-check" "draft-placeholder-filler")
 SKILL_DESCS=(
   "academic-writing     — Markdown → docx / LaTeX 格式转换（pandoc 驱动）"
   "scientific-drawing   — TikZ / matplotlib 学术图表生成"
   "writing-style-check  — 学术正文风格检查与修改建议"
+  "draft-placeholder-filler — 正文草稿【】占位符语义填充与改写"
 )
 
 TOOL_NAMES=("Claude Code" "OpenCode" "Codex CLI" "GitHub Copilot")
@@ -51,6 +52,7 @@ skill_deps() {
     academic-writing)     echo "curl tar pandoc python3" ;;
     scientific-drawing)   echo "curl tar python3" ;;
     writing-style-check)  echo "curl tar python3" ;;
+    draft-placeholder-filler) echo "curl tar" ;;
     *)                    echo "curl tar" ;;
   esac
 }
@@ -375,3 +377,4 @@ echo "技能激活后，直接在对话中说出触发词即可使用："
 echo "  - academic-writing：   \"帮我把 md 转成 docx\""
 echo "  - scientific-drawing： \"帮我画一张架构图\""
 echo "  - writing-style-check：\"帮我检查写作风格\""
+echo "  - draft-placeholder-filler：\"填充占位符\""

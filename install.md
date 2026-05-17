@@ -18,8 +18,9 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
   1) academic-writing     — Markdown → docx / LaTeX 格式转换（pandoc 驱动）
   2) scientific-drawing   — TikZ / matplotlib 学术图表生成
   3) writing-style-check  — 学术正文风格检查与修改建议
+  4) draft-placeholder-filler — 正文草稿【】占位符语义填充与改写
 
-请输入序号（如 1 2 3），或直接回车安装全部：
+请输入序号（如 1 2 3 4），或直接回车安装全部：
 ```
 
 等待用户回复后，记录选中的技能名称。
@@ -37,6 +38,7 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 | academic-writing    | `curl` 、 `tar` （下载必需）、 `pandoc` 、 `python3` |
 | scientific-drawing  | `curl` 、 `tar` （下载必需）、 `python3` 、中文字体（见下方说明） |
 | writing-style-check | `curl` 、 `tar` （下载必需）、 `python3` |
+| draft-placeholder-filler | `curl` 、 `tar` （下载必需） |
 
 检测方式：在终端执行 `command -v <工具名>` ，有输出则表示已安装。Windows 下使用 `where <工具名>` 。
 
@@ -281,6 +283,7 @@ Remove-Item $tmp
   - academic-writing：   "帮我把 md 转成 docx"
   - scientific-drawing： "帮我画一张架构图"
   - writing-style-check："帮我检查写作风格"
+  - draft-placeholder-filler："填充占位符"
 ```
 
 ---
