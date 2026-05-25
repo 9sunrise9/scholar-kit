@@ -1,18 +1,25 @@
 #!/usr/bin/env python3
 """
-《物联网技术与系统设计》正文风格检查器
-基于 WSS-1 规范，输出错误编号 + 说明 + 行号
+学术写作正文风格检查器
+基于 WSS-1 规范，输出规则编号 + 说明 + 行号
 
 用法：
     python3 writingstylecheck.py <文件路径>
     python3 writingstylecheck.py --text "你的文本"
     python3 writingstylecheck.py --stdin
+    python3 writingstylecheck.py <文件路径> --format json
+    python3 writingstylecheck.py <文件路径> --fix
+    python3 writingstylecheck.py <文件路径> --fix-dry-run
 """
 
+import argparse
 import re
 import sys
 import json
 from pathlib import Path
+
+
+LEXICON_PATH = Path(__file__).resolve().parent.parent / "references" / "lexicon-substitutions.zh-CN.json"
 
 # ─────────────────────────────────────────────────────────────
 # 规则定义
@@ -192,6 +199,68 @@ RULES = [
 ]
 
 
+def load_lexicon_mappings(path: Path = LEXICON_PATH):
+    """加载词汇替换映射，失败时返回空列表（不影响主规则检查）。"""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+    mappings = data.get("mappings", [])
+    normalized = []
+    for item in mappings:
+        source = str(item.get("source", "")).strip()
+        targets = item.get("target", [])
+        if not source or not targets:
+            continue
+        if isinstance(targets, str):
+            targets = [targets]
+        normalized.append({
+            "source": source,
+            "target": [str(t).strip() for t in targets if str(t).strip()],
+            "tags": item.get("tags", []),
+        })
+    return normalized
+
+
+LEXICON_MAPPINGS = load_lexicon_mappings()
+
+
+def build_code(rule_id: str):
+    severity = "W" if rule_id.startswith("LX") else "E"
+    return f"{severity}-{rule_id}"
+
+
+def check_lexicon_substitutions(text: str):
+    """检测口语化词汇并给出学术替换建议（LX类）。"""
+    violations = []
+    if not LEXICON_MAPPINGS:
+        return violations
+
+    lines = text.split("\n")
+    for i, line in enumerate(lines, 1):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        for mapping in LEXICON_MAPPINGS:
+            source = mapping["source"]
+            idx = stripped.find(source)
+            if idx >= 0:
+                suggestions = " / ".join(mapping["target"][:3])
+                violations.append({
+                    "rule_id": "LX1",
+                    "category": "词汇替换 / 口语到学术",
+                    "line": i,
+                    "col": idx + 1,
+                    "text": stripped[:80],
+                    "message": f"检测到可替换表达：{source}",
+                    "suggestion": f"可替换为：{suggestions}",
+                    "example_bad": source,
+                    "example_good": suggestions,
+                })
+    return violations
+
+
 def check_text(text: str, file_path: str = None):
     """检查文本，返回违规列表"""
     violations = []
@@ -214,6 +283,7 @@ def check_text(text: str, file_path: str = None):
                         "rule_id": rule_id,
                         "category": rule["category"],
                         "line": i,
+                        "col": 1,
                         "text": stripped[:80],
                         "message": msg,
                         "suggestion": rule.get("suggestion", ""),
@@ -223,12 +293,13 @@ def check_text(text: str, file_path: str = None):
 
         elif mode == "search":
             for i, line in enumerate(lines, 1):
-                if re.search(pattern, line):
-                    match = re.search(pattern, line)
+                match = re.search(pattern, line)
+                if match:
                     violations.append({
                         "rule_id": rule_id,
                         "category": rule["category"],
                         "line": i,
+                        "col": match.start() + 1,
                         "text": line.strip()[:80],
                         "message": msg,
                         "suggestion": rule.get("suggestion", ""),
@@ -236,74 +307,186 @@ def check_text(text: str, file_path: str = None):
                         "example_good": rule.get("example_good", ""),
                     })
 
+    # 词汇替换建议（不改变原有规则检查行为）
+    violations.extend(check_lexicon_substitutions(text))
+
     return violations
 
 
+def apply_auto_fixes(text: str):
+    """低风险自动修复：标点、格式、部分短词替换。"""
+    fixed = text
+    stats = {
+        "ascii_double_quotes": 0,
+        "ascii_single_quotes": 0,
+        "halfwidth_parentheses": 0,
+        "markdown_bold": 0,
+        "phrases": 0,
+        "lexicon_short": 0,
+    }
+
+    # 1) 直引号 -> 中文弯引号（成对）
+    fixed, n = re.subn(r'"([^"\n]{1,120})"', r'“\1”', fixed)
+    stats["ascii_double_quotes"] += n
+    fixed, n = re.subn(r"'([^'\n]{1,120})'", r"‘\1’", fixed)
+    stats["ascii_single_quotes"] += n
+
+    # 2) 半角括号 -> 全角括号
+    fixed, n = re.subn(r"\(([^()\n]{1,120})\)", r"（\1）", fixed)
+    stats["halfwidth_parentheses"] += n
+
+    # 3) 删除 markdown 加粗标记
+    fixed, n = re.subn(r"\*\*([^*\n]{1,120})\*\*", r"\1", fixed)
+    stats["markdown_bold"] += n
+
+    # 4) T2 常见词替换
+    phrase_map = {
+        "值得注意的是": "特别指出，",
+        "很重要的是": "需要说明的是，",
+        "不可忽视的是": "需要说明的是，",
+        "需要特别说明的是": "需要说明的是，",
+        "特别值得指出的是": "特别指出，",
+    }
+    for src, tgt in phrase_map.items():
+        count = fixed.count(src)
+        if count:
+            fixed = fixed.replace(src, tgt)
+            stats["phrases"] += count
+
+    # 5) 词汇映射短词替换（保守策略）
+    # 仅替换短词，避免长句模板引发语义偏移。
+    for item in LEXICON_MAPPINGS:
+        src = item["source"]
+        targets = item["target"]
+        if not targets:
+            continue
+        if len(src) > 8:
+            continue
+        if any(ch in src for ch in "（）()、，；：\n/ "):
+            continue
+        tgt = targets[0]
+        count = fixed.count(src)
+        if count:
+            fixed = fixed.replace(src, tgt)
+            stats["lexicon_short"] += count
+
+    stats["total"] = sum(stats.values())
+    return fixed, stats
+
+
 def report(violations, file_path=None):
-    """格式化输出报告"""
+    """输出 pep8 风格报告：path:line:col: CODE message"""
     if not violations:
-        print("✅ 未发现 WSS-1 违规")
+        print("WSS100 OK  未发现违规项")
         return
 
-    # 按规则ID分组
-    by_rule = {}
+    # 统计
+    by_code = {}
+    err_count = 0
+    warn_count = 0
     for v in violations:
-        rid = v["rule_id"]
-        if rid not in by_rule:
-            by_rule[rid] = v
+        code = build_code(v["rule_id"])
+        by_code[code] = by_code.get(code, 0) + 1
+        if code.startswith("E-"):
+            err_count += 1
+        else:
+            warn_count += 1
 
-    print(f"\n{'='*60}")
-    print(f" WSS-1 风格检查报告")
+    print("\n" + "=" * 72)
+    print("WSS-1 CHECK REPORT")
     if file_path:
-        print(f" 文件：{file_path}")
-    print(f" 违规总数：{len(violations)} 处，涵盖 {len(by_rule)} 条规则")
-    print(f"{'='*60}\n")
+        print(f"FILE: {file_path}")
+    print(f"TOTAL: {len(violations)}  ERRORS: {err_count}  WARNINGS: {warn_count}")
+    print("CODE SUMMARY: " + ", ".join(f"{k} x{v}" for k, v in sorted(by_code.items())))
+    print("=" * 72)
 
-    # 按类别分组输出
-    current_category = None
-    for v in sorted(violations, key=lambda x: (x["rule_id"].split(".")[0], x["rule_id"])):
-        cat_prefix = v["rule_id"].split(".")[0]
-        if v["category"] != current_category:
-            current_category = v["category"]
-            print(f"\n{'─'*60}")
-            print(f" [{cat_prefix}] {current_category}")
-            print(f"{'─'*60}")
+    print("\nDETAILS (pep8-style):")
+    sorted_violations = sorted(
+        violations,
+        key=lambda x: (
+            0 if build_code(x["rule_id"]).startswith("E-") else 1,
+            x["line"],
+            x.get("col", 1),
+            x["rule_id"],
+        ),
+    )
 
-        print(f"  🔴 [{v['rule_id']}] 第{v['line']}行")
-        print(f"     原文：{v['text']}")
-        print(f"     说明：{v['message']}")
-        if v["suggestion"]:
-            print(f"     建议：{v['suggestion']}")
-        if v.get("example_good"):
-            print(f"     ✅ 改写参考：{v['example_good']}")
+    file_ref = file_path if file_path else "<stdin>"
+    for v in sorted_violations:
+        code = build_code(v["rule_id"])
+        col = v.get("col", 1)
+        clause = f"条目:{v['rule_id']}"
+        print(f"{file_ref}:{v['line']}:{col}: {code} {clause} {v['message']}")
+        if v.get("text"):
+            print(f"    命中: {v['text']}")
+        if v.get("suggestion"):
+            print(f"    建议: {v['suggestion']}")
 
-    print(f"\n{'='*60}")
-    print(f" 规则覆盖：L=语言基调  P=段落结构  T=技术内容  F=符号格式")
-    print(f"{'='*60}\n")
+    print("\n" + "=" * 72)
+    print("CODE LEGEND: E=Error(MUST), W=Warning(SHOULD) | L/P/T/F/LX 对应规范章节")
+    print("=" * 72 + "\n")
 
 
-if __name__ == "__main__":
-    if len(sys.argv) == 1:
-        print(__doc__)
-        sys.exit(0)
+def report_json(violations, file_path=None, fix_info=None):
+    """JSON 结构化报告，便于自动化接入。"""
+    by_code = {}
+    err_count = 0
+    warn_count = 0
+    items = []
 
-    if sys.argv[1] == "--text":
-        text = sys.argv[2] if len(sys.argv) > 2 else ""
-        violations = check_text(text)
-        report(violations)
+    for v in sorted(violations, key=lambda x: (x["line"], x.get("col", 1), x["rule_id"])):
+        code = build_code(v["rule_id"])
+        by_code[code] = by_code.get(code, 0) + 1
+        if code.startswith("E-"):
+            err_count += 1
+        else:
+            warn_count += 1
+        items.append({
+            "code": code,
+            "rule_id": v["rule_id"],
+            "category": v["category"],
+            "line": v["line"],
+            "col": v.get("col", 1),
+            "message": v["message"],
+            "suggestion": v.get("suggestion", ""),
+            "snippet": v.get("text", ""),
+        })
 
-    elif sys.argv[1] == "--stdin":
-        text = sys.stdin.read()
-        violations = check_text(text)
-        report(violations)
+    payload = {
+        "standard": "WSS-1",
+        "file": file_path,
+        "summary": {
+            "total": len(violations),
+            "errors": err_count,
+            "warnings": warn_count,
+            "code_summary": by_code,
+        },
+        "fix": fix_info or {"enabled": False},
+        "violations": items,
+    }
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
 
-    elif Path(sys.argv[1]).exists():
-        file_path = sys.argv[1]
-        text = Path(file_path).read_text(encoding="utf-8")
-        violations = check_text(text, file_path)
-        report(violations, file_path)
 
-    elif sys.argv[1] == "--demo":
+def parse_args(argv):
+    parser = argparse.ArgumentParser(description="WSS-1 学术写作风格检查器")
+    parser.add_argument("path", nargs="?", help="待检查文件路径")
+    parser.add_argument("--text", dest="text", help="直接检查文本")
+    parser.add_argument("--stdin", action="store_true", help="从标准输入读取文本")
+    parser.add_argument("--demo", action="store_true", help="运行内置示例")
+    parser.add_argument("--format", choices=["text", "json"], default="text", help="输出格式")
+    fix_group = parser.add_mutually_exclusive_group()
+    fix_group.add_argument("--fix", action="store_true", help="启用低风险自动修复并写回文件")
+    fix_group.add_argument("--fix-dry-run", action="store_true", help="预览低风险自动修复，不写回文件")
+    return parser.parse_args(argv)
+
+
+def load_input(args):
+    """加载输入文本与来源信息。"""
+    if args.text is not None:
+        return args.text, None, "text"
+    if args.stdin:
+        return sys.stdin.read(), None, "stdin"
+    if args.demo:
         demo_text = """
 随着人工智能技术的不断发展，边缘计算越来越重要。
 智能制造是AIoT最成熟的应用领域，他主要通过在生产线部署传感器网络实现智能化。
@@ -321,9 +504,54 @@ if __name__ == "__main__":
 低延迟，——
 高隐私。
 """
-        violations = check_text(demo_text)
-        report(violations)
+        return demo_text, None, "demo"
+    if args.path:
+        p = Path(args.path)
+        if not p.exists():
+            print(f"文件不存在：{args.path}")
+            sys.exit(1)
+        return p.read_text(encoding="utf-8"), args.path, "file"
 
+    print(__doc__)
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    args = parse_args(sys.argv[1:])
+    original_text, file_path, source_type = load_input(args)
+
+    text_for_check = original_text
+    fix_enabled = bool(args.fix or args.fix_dry_run)
+    dry_run = bool(args.fix_dry_run)
+    fix_info = {"enabled": fix_enabled, "dry_run": dry_run}
+    if fix_enabled:
+        fixed_text, fix_stats = apply_auto_fixes(original_text)
+        fix_info.update({
+            "stats": fix_stats,
+            "changed": fixed_text != original_text,
+            "source_type": source_type,
+        })
+        text_for_check = fixed_text
+
+        if source_type == "file" and file_path and fixed_text != original_text and not dry_run:
+            Path(file_path).write_text(fixed_text, encoding="utf-8")
+            fix_info["write_back"] = True
+        else:
+            fix_info["write_back"] = False
+
+    violations = check_text(text_for_check, file_path)
+
+    if args.format == "json":
+        report_json(violations, file_path=file_path, fix_info=fix_info)
     else:
-        print(f"文件不存在：{sys.argv[1]}")
-        sys.exit(1)
+        if fix_enabled:
+            changed = "是" if fix_info.get("changed") else "否"
+            dry_run_text = "是" if dry_run else "否"
+            print(f"AUTO-FIX: 启用  发生修改: {changed}")
+            print(f"AUTO-FIX DRY-RUN: {dry_run_text}")
+            print(f"AUTO-FIX STATS: {fix_info.get('stats', {})}")
+            if source_type == "file" and fix_info.get("write_back"):
+                print(f"AUTO-FIX WRITE-BACK: 已写回文件 {file_path}")
+            elif source_type == "file" and dry_run and fix_info.get("changed"):
+                print("AUTO-FIX WRITE-BACK: dry-run模式，未写回文件")
+        report(violations, file_path)

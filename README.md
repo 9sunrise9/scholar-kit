@@ -53,6 +53,30 @@ curl -s https://raw.githubusercontent.com/sunyue/scholar-kit/main/install.md
 
 ---
 
+## 最近更新（writing-style-check）
+
+`writing-style-check` 已完成一次面向通用学术写作的能力升级，主要新增如下功能：
+
+- 通用规范化：规则文档从单一教材场景升级为通用学术写作约束体系（保持 MUST/SHOULD/MAY 约束分级）。
+- 词汇映射外置：新增结构化映射文件 `lexicon-substitutions.zh-CN.json`，用于维护口语到学术表达的替换建议。
+- pep8 风格报告：检查结果采用 `<path>:<line>:<col>: <code>` 格式，支持错误/警告代码分级。
+- JSON 输出：新增 `--format json`，输出 `summary/fix/violations` 结构，便于自动化流程接入。
+- 自动修复：新增 `--fix`（低风险自动修复并写回文件）。
+- 预览修复：新增 `--fix-dry-run`（执行修复计算但不写回文件）。
+- 测试覆盖：新增 CLI 级测试，覆盖 JSON 输出、`--fix` 写回、`--fix-dry-run` 不写回三条主路径。
+
+常用命令示例：
+
+```bash
+python3 writing-style-check/scripts/writingstylecheck.py your.md
+python3 writing-style-check/scripts/writingstylecheck.py your.md --format json
+python3 writing-style-check/scripts/writingstylecheck.py your.md --fix
+python3 writing-style-check/scripts/writingstylecheck.py your.md --fix-dry-run
+python3 -m unittest writing-style-check/tests/test_writingstylecheck.py -v
+```
+
+---
+
 ## 仓库结构
 
 ```

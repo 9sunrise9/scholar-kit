@@ -7,6 +7,12 @@ description: 学术写作风格检查技能。基于通用学术写作规范，�
 
 本技能依据通用学术写作规范提供风格检查与指导。
 
+词汇替换与说法替换采用结构化映射表维护：
+
+- `references/lexicon-substitutions.zh-CN.json`
+
+在执行润色建议时，映射表用于提供候选替换，不进行脱离语境的机械替换。
+
 ## 核心原则
 
 **MUST（必须）**：违反即返工，无例外
@@ -126,6 +132,9 @@ description: 学术写作风格检查技能。基于通用学术写作规范，�
 python3 scripts/writingstylecheck.py <文件路径>
 python3 scripts/writingstylecheck.py --text "你的文本"
 python3 scripts/writingstylecheck.py --demo  # 运行演示
+python3 scripts/writingstylecheck.py <文件路径> --format json
+python3 scripts/writingstylecheck.py <文件路径> --fix
+python3 scripts/writingstylecheck.py <文件路径> --fix-dry-run
 ```
 
 脚本可检测：
@@ -133,7 +142,24 @@ python3 scripts/writingstylecheck.py --demo  # 运行演示
 - P节（段落结构）：段落开头、列表引出、并列标点
 - T节（技术内容）：重点标注词语
 - F节（符号格式）：引号、括号、缩写格式、加粗、破折号分节
+- LX节（词汇替换）：基于映射表的口语到学术表达替换建议
+
+检查结果采用 pep8 风格输出：
+
+```text
+<path>:<line>:<col>: <code> 条目:<rule_id> <message>
+```
+
+其中 `E-*` 为 MUST 级错误，`W-*` 为 SHOULD 级建议。
+
+可选参数：
+
+- `--format json`：输出结构化报告，便于自动化流程接入
+- `--fix`：执行低风险自动修复（文件输入会直接写回）
+- `--fix-dry-run`：执行低风险自动修复预览（不写回文件）
 
 ## 详细规范
 
-完整规范文档见 [references/WritingStyle.md](references/WritingStyle.md)，包含更多示例与说明。
+完整规范文档见 [references/WritingStyle.md](references/WritingStyle.md)，包含条款、示例与约束等级。
+
+词汇替换映射见 [references/lexicon-substitutions.zh-CN.json](references/lexicon-substitutions.zh-CN.json)，用于术语与表达的标准化建议。
