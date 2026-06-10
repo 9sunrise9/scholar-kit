@@ -99,6 +99,7 @@
     {"source": "上云", "target": ["上传至云平台"], "tags": ["systems"]},
     {"source": "可落地", "target": ["可执行"], "tags": ["execution"]},
     {"source": "特别要注意的是", "target": ["需要注意的是"], "tags": ["tone"]},
-    {"source": "这个流程的关键", "target": ["该流程的关键"], "tags": ["tone"]}
+    {"source": "这个流程的关键", "target": ["该流程的关键"], "tags": ["tone"]},
+    {"source": "切片", "target": ["逻辑分区"], "tags": ["networking", "5g", "akua"]}
   ]
 }
