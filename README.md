@@ -3,6 +3,8 @@
 面向学术写作与科研生产力的 AI 技能包，覆盖：
 
 * 学术文稿格式转换（Markdown → docx / LaTeX）
+* 论文风格蒸馏（从高质量论文提炼可仿写风格资产）
+* 风格驱动写作（基于蒸馏画像生成/改写学术文本）
 * 学术图表绘制（TikZ / matplotlib）
 * 学术写作风格检查（规则化检测与报告）
 * 草稿占位符填充（【...】语义补全与术语规范化）
@@ -15,7 +17,9 @@
 
 | 技能 | 说明 | 触发关键词示例 |
 |------|------|----------------|
-| `academic-writing` | Markdown → docx / LaTeX 格式转换，pandoc 驱动 | "帮我把 md 转成 docx"、"导出 LaTeX" |
+| `academic-writing-project-builder` | 学术写作项目初始化与 Markdown → docx / LaTeX 转换 | "初始化学术写作项目"、"帮我把 md 转成 docx" |
+| `paper-style-distiller` | 从论文样本蒸馏语言习惯、句型、逻辑结构与时态偏好 | "蒸馏论文风格"、"提取写作风格" |
+| `style-guided-academic-writer` | 基于蒸馏结果执行风格对齐写作/改写 | "按蒸馏风格写作"、"风格仿写" |
 | `scientific-drawing` | TikZ / matplotlib 学术图表生成 | "画图"、"生成架构图"、"绘制流程图" |
 | `writing-style-check` | 学术正文风格检查，输出可执行修改建议 | "检查写作规范"、"润色论文"、"风格检查" |
 | `draft-placeholder-filler` | 识别并填充正文草稿中的【...】占位符，按提示语义改写 | "填充占位符"、"处理【】"、"补全草稿" |
@@ -84,11 +88,18 @@ scholar-kit/
 ├── README.md
 ├── install.sh                  # 交互式安装脚本（终端）
 ├── install.md                  # AI 向导安装提示词
-├── academic-writing/
+├── academic-writing-project-builder/
 │   ├── SKILL.md                # 技能入口（AI 自动加载）
 │   ├── README.md
 │   └── scripts/                # pandoc 转换辅助脚本
 ├── draft-placeholder-filler/
+│   ├── SKILL.md
+│   └── README.md
+├── paper-style-distiller/
+│   ├── SKILL.md
+│   ├── README.md
+│   └── references/            # 蒸馏治理、schema、核心5维执行模板
+├── style-guided-academic-writer/
 │   ├── SKILL.md
 │   └── README.md
 ├── scientific-drawing/
@@ -117,7 +128,7 @@ scholar-kit/
 
 ---
 
-### academic-writing
+### academic-writing-project-builder
 
 **必需**
 
@@ -134,6 +145,22 @@ scholar-kit/
 | `python-docx` | 辅助分析 docx 样式 | `pip install python-docx` |
 | `fswatch` | macOS 文件监控 | `brew install fswatch` |
 | `inotify-tools` | Linux 文件监控 | `sudo apt install inotify-tools` |
+
+---
+
+### paper-style-distiller
+
+| 工具 | 版本要求 | 说明 |
+|------|---------|------|
+| `python3` | ≥ 3.9 | 用于风格统计和结构化输出（默认可仅依赖标准库） |
+
+---
+
+### style-guided-academic-writer
+
+| 工具 | 版本要求 | 说明 |
+|------|---------|------|
+| `python3` | ≥ 3.9 | 用于风格约束读取与写作流程脚本（默认可仅依赖标准库） |
 
 ---
 

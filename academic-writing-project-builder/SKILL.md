@@ -1,9 +1,9 @@
 ---
-name: academic-writing
-description: 学术论文写作技能：Markdown（内嵌 LaTeX 公式）撰写，通过 pandoc 转换为符合模版的 docx 或 LaTeX。触发场景：用户提供 docx/tex 模版要求创建转换脚本、说"帮我把 md 转成 docx/tex"、要求检查转换结果与模版的格式差异、建立项目目录结构、或在 Ulysses/Obsidian 写作后需要导出最终格式。
+name: academic-writing-project-builder
+description: 学术写作项目构建技能：初始化写作目录、生成转换脚本，并将 Markdown（内嵌 LaTeX 公式）转换为符合模版的 docx 或 LaTeX。触发场景：用户要求创建写作工程、配置 convert.sh、或执行 md 到 docx/tex 的规范转换。
 ---
 
-# 学术写作技能
+# 学术写作项目构建技能
 
 ## 0. 核心约束
 
@@ -68,7 +68,7 @@ echo "目录结构已创建：${WORK_DIR}/"
 
 ```bash
 #!/bin/bash
-# convert.sh — 由 academic-writing 技能自动生成，请勿手动修改
+# convert.sh — 由 academic-writing-project-builder 技能自动生成，请勿手动修改
 set -e
 
 # ── 0. 配置区 ──
@@ -389,11 +389,11 @@ sed -i.bak -e '...' FILE && rm -f FILE.bak
 
 ## 6. 辅助脚本参考
 
-### 6.4 watch.sh（watchdog，推荐）
+### 6.1 watch.sh（watchdog，推荐）
 
 watchdog 实现，防抖 2 秒。完整代码见 `script/watch.sh`。
 
-### 6.1 format_filter.lua（默认生成，优先使用）
+### 6.2 format_filter.lua（默认生成，优先使用）
 
 Lua filter 是 pandoc 原生支持的格式调整手段，运行在 AST 层面，比补丁脚本更可靠。
 
@@ -455,7 +455,7 @@ return filter
 | 图片题注位置 | 调换 `Para` 中 `Image` 和 `Str` 顺序 |
 | 标题加编号 | `Header` 中插入 `Strong` 编号前缀 |
 
-### 6.2 extract_template_styles.py（必须，模版分析）
+### 6.3 extract_template_styles.py（必须，模版分析）
 
 ```python
 #!/usr/bin/env python3
@@ -489,7 +489,7 @@ if __name__ == '__main__':
     extract_styles(sys.argv[1] if len(sys.argv) > 1 else 'template.docx')
 ```
 
-### 6.3 patch_fonts.py（最后手段）
+### 6.4 patch_fonts.py（最后手段）
 
 ```python
 #!/usr/bin/env python3
@@ -592,14 +592,135 @@ pandoc 输出的自定义样式只有存根，必须从 reference.docx 复制完
 namespace 转换要点（reference.docx 用无前缀，输出 docx 用 `w:` 前缀）：
 
 ```python
-ref_style_w = ref_style \
-    .replace('<style ', '<w:style ') \
-    .replace(' styleId=', ' w:styleId=') \
-    .replace('<pPr>', '<w:pPr>') \
-    .replace('<ind ', '<w:ind ') \
-    .replace(' firstLine=', ' w:firstLine=') \
-    .replace(' firstLineChars=', ' w:firstLineChars=')
-    # ... 同理处理所有属性和标签
+# 1. 先从 reference.docx 的 styles.xml 抽出一个完整 <style>...</style> 块
+# 2. 调用 convert_style_to_w_ns() 给所有标签和属性加上 w: 前缀
+# 3. 整块替换输出 docx 的 styles.xml 中同 styleId 的存根
+
+def convert_style_to_w_ns(ref_style_xml: str) -> str:
+    """把 reference.docx 的样式块（无命名空间前缀）转为 w: 前缀形式。
+
+    reference.docx 的 styles.xml 里样式定义不带前缀，例如::
+
+        <style styleId="TableBody">
+          <pPr>
+            <spacing before="0" after="0" line="240" lineRule="auto"/>
+            <ind firstLine="0" firstLineChars="0"/>
+            <jc val="both"/>
+          </pPr>
+          <rPr>
+            <rFonts eastAsia="宋体" ascii="Times New Roman" hAnsi="Times New Roman"/>
+            <sz val="21"/>
+          </rPr>
+        </style>
+
+    pandoc 输出的 docx 则全程使用 ``w:`` 前缀。本函数对一段 *无前缀* 的
+    样式 XML 字符串做纯文本级别的命名空间注入，覆盖段落属性、字符属性、
+    表格属性三大组共 30+ 个标签及其常见属性。
+
+    策略
+    ----
+    对每个已知标签 T 做四次替换::
+
+        "<T "  -> "<w:T "   开口带属性（含自闭合 <T .../>）
+        "<T>"  -> "<w:T>"   开口无属性
+        "<T/>" -> "<w:T/>"  自闭合无属性（如 <rPr/>）
+        "</T>" -> "</w:T>"  闭合
+
+    对每个已知属性 A 做一次替换（属性前必有空白）::
+
+        " A="  -> " w:A="
+
+    注意事项
+    --------
+    * **不是 XML 解析器**：只覆盖 pandoc/reference.docx 实际会出现的子集；
+      遇到陌生标签会被原样保留，调用方需自行补充。
+    * **非幂等**：对已经带 ``w:`` 前缀的输入再次调用会产生 ``w:w:style``。
+      请只对无前缀输入调用。
+    * **属性顺序**：长名在前（``firstLineChars`` 在 ``firstLine`` 之前，
+      ``lineRule`` 在 ``line`` 之前），避免子串误吞前缀。
+    * **标签前缀**靠 ``<`` 锚点避免 ``rPr`` 误改 ``tblPr``/``trPr``/``tcPr``。
+
+    Parameters
+    ----------
+    ref_style_xml : str
+        单个 ``<style>...</style>`` 块的原始 XML 字符串（无 w: 前缀）。
+
+    Returns
+    -------
+    str
+        所有已知标签和属性都加好 ``w:`` 前缀的等价 XML 字符串。
+    """
+    # 标签清单：段落属性 / 字符属性 / 表格属性 / 表格边框子元素 / 根 style
+    tags = [
+        # 段落属性 (paragraph-property group)
+        "pPr", "ind", "jc", "spacing", "outlineLvl",
+        "numPr", "numId", "ilvl",
+        "tabs", "tab",
+        "framePr", "pBdr",
+        # 字符属性 (run-property group)
+        "rPr", "rFonts", "sz", "szCs", "color",
+        "b", "i", "u", "strike",
+        "vertAlign", "highlight", "lang",
+        # 表格相关 (table group)
+        "tbl", "tblPr", "tblGrid", "tblBorders", "tblLayout", "tblW",
+        "tc", "tcPr", "tcW", "tr", "trPr",
+        "gridSpan", "vMerge", "tblCellMar",
+        # 边框子元素（pBdr / tblBorders 通用）
+        "top", "left", "bottom", "right", "insideH", "insideV",
+        # 根标签
+        "style",
+    ]
+
+    # 属性清单：长名在前，避免子串误吞
+    attrs = [
+        "firstLineChars", "firstLine",
+        "lineRule", "line",
+        "before", "after",
+        "eastAsia", "hAnsi", "ascii",
+        "styleId",
+        "val", "type", "w",
+    ]
+
+    out = ref_style_xml
+    # 标签四态：开口带属性 / 开口无属性 / 自闭合无属性 / 闭合
+    for t in tags:
+        out = out.replace(f"<{t} ",  f"<w:{t} ")
+        out = out.replace(f"<{t}>",  f"<w:{t}>")
+        out = out.replace(f"<{t}/>", f"<w:{t}/>")
+        out = out.replace(f"</{t}>", f"</w:{t}>")
+    # 属性：OOXML 中属性前必有空白
+    for a in attrs:
+        out = out.replace(f" {a}=", f" w:{a}=")
+    return out
+
+
+# ---- 示例用法 -----------------------------------------------------------
+# ref_style = (
+#     '<style styleId="TableBody">'
+#     '<pPr>'
+#     '<spacing before="0" after="0" line="240" lineRule="auto"/>'
+#     '<ind firstLine="0" firstLineChars="0"/>'
+#     '<jc val="both"/>'
+#     '</pPr>'
+#     '<rPr>'
+#     '<rFonts eastAsia="宋体" ascii="Times New Roman" hAnsi="Times New Roman"/>'
+#     '<sz val="21"/>'
+#     '</rPr>'
+#     '</style>'
+# )
+# w_style = convert_style_to_w_ns(ref_style)
+# # w_style 变为：
+# # <w:style w:styleId="TableBody">
+# # <w:pPr>
+# # <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+# # <w:ind w:firstLine="0" w:firstLineChars="0"/>
+# # <w:jc w:val="both"/>
+# # </w:pPr>
+# # <w:rPr>
+# # <w:rFonts w:eastAsia="宋体" w:ascii="Times New Roman" w:hAnsi="Times New Roman"/>
+# # <w:sz w:val="21"/>
+# # </w:rPr>
+# # </w:style>
 ```
 
 #### Step C：表格满页宽 + autofit

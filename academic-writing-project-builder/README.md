@@ -1,6 +1,6 @@
-# academic-writing
+# academic-writing-project-builder
 
-学术 Markdown → docx / LaTeX 转换技能。使用 Markdown（内嵌 LaTeX 公式）撰写，通过 Pandoc 转换为符合模版的 docx 或 LaTeX 文档，全程由 AI Agent 协作生成、审查、迭代。
+学术写作项目构建与转换技能。负责初始化项目结构、生成转换脚本，并将 Markdown（内嵌 LaTeX 公式）转换为符合模版的 docx 或 LaTeX 文档。
 
 ---
 

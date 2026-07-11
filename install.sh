@@ -14,9 +14,11 @@ fi
 REPO_BASE="https://raw.githubusercontent.com/sunyue/scholar-kit/main"
 REPO_ARCHIVE="https://github.com/sunyue/scholar-kit/archive/refs/heads/main.tar.gz"
 
-ALL_SKILLS=("academic-writing" "scientific-drawing" "writing-style-check" "draft-placeholder-filler")
+ALL_SKILLS=("academic-writing-project-builder" "paper-style-distiller" "style-guided-academic-writer" "scientific-drawing" "writing-style-check" "draft-placeholder-filler")
 SKILL_DESCS=(
-  "academic-writing     — Markdown → docx / LaTeX 格式转换（pandoc 驱动）"
+  "academic-writing-project-builder  — 学术写作项目初始化 + Markdown → docx / LaTeX 转换"
+  "paper-style-distiller            — 论文风格蒸馏（词汇/句型/逻辑/时态）"
+  "style-guided-academic-writer     — 基于蒸馏画像的风格对齐写作"
   "scientific-drawing   — TikZ / matplotlib 学术图表生成"
   "writing-style-check  — 学术正文风格检查与修改建议"
   "draft-placeholder-filler — 正文草稿【】占位符语义填充与改写"
@@ -49,7 +51,9 @@ print_divider() { echo ""; echo "───────────────�
 # 返回某技能所需的依赖列表（空格分隔）
 skill_deps() {
   case "$1" in
-    academic-writing)     echo "curl tar pandoc python3" ;;
+    academic-writing-project-builder)     echo "curl tar pandoc python3" ;;
+    paper-style-distiller)   echo "curl tar python3" ;;
+    style-guided-academic-writer)   echo "curl tar python3" ;;
     scientific-drawing)   echo "curl tar python3" ;;
     writing-style-check)  echo "curl tar python3" ;;
     draft-placeholder-filler) echo "curl tar" ;;
@@ -374,7 +378,9 @@ done
 echo "安装完成！请重启对应的 AI 工具以激活技能。"
 echo ""
 echo "技能激活后，直接在对话中说出触发词即可使用："
-echo "  - academic-writing：   \"帮我把 md 转成 docx\""
+echo "  - academic-writing-project-builder：   \"帮我把 md 转成 docx\""
+echo "  - paper-style-distiller：            \"蒸馏论文风格\""
+echo "  - style-guided-academic-writer：     \"按蒸馏风格写作\""
 echo "  - scientific-drawing： \"帮我画一张架构图\""
 echo "  - writing-style-check：\"帮我检查写作风格\""
 echo "  - draft-placeholder-filler：\"填充占位符\""

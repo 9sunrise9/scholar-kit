@@ -1,0 +1,41 @@
+{
+  "run_id": "distill-YYYYMMDD-HHMM",
+  "schema_version": "v1",
+  "prompt_pack_version": "core5-v1",
+  "skill_versions": [
+    {
+      "name": "rules-distill",
+      "version": "fill-me"
+    },
+    {
+      "name": "distill",
+      "version": "fill-me"
+    },
+    {
+      "name": "prose-distill",
+      "version": "fill-me"
+    },
+    {
+      "name": "extract-pattern",
+      "version": "fill-me"
+    },
+    {
+      "name": "argumentation",
+      "version": "fill-me"
+    }
+  ],
+  "source_corpus_hash": "fill-me",
+  "run_timestamp": "fill-me",
+  "operator": "fill-me",
+  "budget": {
+    "max_tokens_total": 500000,
+    "max_minutes_total": 90,
+    "max_dimensions_parallel": 3
+  },
+  "gates": {
+    "coverage_min": 0.7,
+    "consistency_min": 0.6,
+    "actionability_min": 0.7,
+    "leakage_risk_max": 0.2
+  }
+}

@@ -15,10 +15,12 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 
 ```
 可用技能：
-  1) academic-writing     — Markdown → docx / LaTeX 格式转换（pandoc 驱动）
-  2) scientific-drawing   — TikZ / matplotlib 学术图表生成
-  3) writing-style-check  — 学术正文风格检查与修改建议
-  4) draft-placeholder-filler — 正文草稿【】占位符语义填充与改写
+  1) academic-writing-project-builder — 学术写作项目初始化 + Markdown → docx / LaTeX 转换
+  2) paper-style-distiller            — 论文风格蒸馏（词汇/句型/逻辑/时态）
+  3) style-guided-academic-writer     — 基于蒸馏画像的风格对齐写作
+  4) scientific-drawing               — TikZ / matplotlib 学术图表生成
+  5) writing-style-check              — 学术正文风格检查与修改建议
+  6) draft-placeholder-filler         — 正文草稿【】占位符语义填充与改写
 
 请输入序号（如 1 2 3 4），或直接回车安装全部：
 ```
@@ -35,7 +37,9 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 
 | 技能 | 依赖工具 |
 |------|---------|
-| academic-writing    | `curl` 、 `tar` （下载必需）、 `pandoc` 、 `python3` |
+| academic-writing-project-builder    | `curl` 、 `tar` （下载必需）、 `pandoc` 、 `python3` |
+| paper-style-distiller               | `curl` 、 `tar` （下载必需）、 `python3` |
+| style-guided-academic-writer        | `curl` 、 `tar` （下载必需）、 `python3` |
 | scientific-drawing  | `curl` 、 `tar` （下载必需）、 `python3` 、中文字体（见下方说明） |
 | writing-style-check | `curl` 、 `tar` （下载必需）、 `python3` |
 | draft-placeholder-filler | `curl` 、 `tar` （下载必需） |
@@ -63,7 +67,7 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 
 ```
 ⚠️  未找到依赖：pandoc
-    academic-writing 需要 pandoc 才能正常运行。
+    academic-writing-project-builder 需要 pandoc 才能正常运行。
 
     是否现在安装？
     macOS：  brew install pandoc
@@ -207,18 +211,18 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 **Claude Code / OpenCode**（下载技能目录）：
 
 ```bash
-# 以安装 academic-writing 到 Claude Code 为例：
+# 以安装 academic-writing-project-builder 到 Claude Code 为例：
 mkdir -p ~/.claude/skills
 curl -sL https://github.com/sunyue/scholar-kit/archive/refs/heads/main.tar.gz \
-  | tar -xz --strip-components=2 -C ~/.claude/skills scholar-kit-main/academic-writing
+  | tar -xz --strip-components=2 -C ~/.claude/skills scholar-kit-main/academic-writing-project-builder
 ```
 
 **Codex CLI**（下载 SKILL.md 并追加到全局指令文件）：
 
 ```bash
 mkdir -p ~/.codex
-printf '\n<!-- scholar-kit: academic-writing -->\n' >> ~/.codex/instructions.md
-curl -sL https://raw.githubusercontent.com/sunyue/scholar-kit/main/academic-writing/SKILL.md \
+printf '\n<!-- scholar-kit: academic-writing-project-builder -->\n' >> ~/.codex/instructions.md
+curl -sL https://raw.githubusercontent.com/sunyue/scholar-kit/main/academic-writing-project-builder/SKILL.md \
   >> ~/.codex/instructions.md
 ```
 
@@ -227,7 +231,7 @@ curl -sL https://raw.githubusercontent.com/sunyue/scholar-kit/main/academic-writ
 ```bash
 mkdir -p ~/.copilot/skills
 curl -sL https://github.com/sunyue/scholar-kit/archive/refs/heads/main.tar.gz \
-  | tar -xz --strip-components=2 -C ~/.copilot/skills scholar-kit-main/academic-writing
+  | tar -xz --strip-components=2 -C ~/.copilot/skills scholar-kit-main/academic-writing-project-builder
 ```
 
 ### Windows（PowerShell）
@@ -239,11 +243,11 @@ curl -sL https://github.com/sunyue/scholar-kit/archive/refs/heads/main.tar.gz \
 ```powershell
 # Claude Code：目标目录 $env:USERPROFILE\.claude\skills
 # OpenCode：  目标目录 $env:USERPROFILE\.opencode\skills
-# 以安装 academic-writing 到 Claude Code 为例：
+# 以安装 academic-writing-project-builder 到 Claude Code 为例：
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills" | Out-Null
 $tmp = "$env:TEMP\scholar-kit.tar.gz"
 Invoke-WebRequest -Uri "https://github.com/sunyue/scholar-kit/archive/refs/heads/main.tar.gz" -OutFile $tmp
-tar -xz --strip-components=2 -C "$env:USERPROFILE\.claude\skills" -f $tmp "scholar-kit-main/academic-writing"
+tar -xz --strip-components=2 -C "$env:USERPROFILE\.claude\skills" -f $tmp "scholar-kit-main/academic-writing-project-builder"
 Remove-Item $tmp
 ```
 
@@ -251,9 +255,9 @@ Remove-Item $tmp
 
 ```powershell
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex" | Out-Null
-Add-Content "$env:USERPROFILE\.codex\instructions.md" "`n<!-- scholar-kit: academic-writing -->"
+Add-Content "$env:USERPROFILE\.codex\instructions.md" "`n<!-- scholar-kit: academic-writing-project-builder -->"
 $tmp_skill = "$env:TEMP\scholar-kit-skill.md"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/sunyue/scholar-kit/main/academic-writing/SKILL.md" -OutFile $tmp_skill
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/sunyue/scholar-kit/main/academic-writing-project-builder/SKILL.md" -OutFile $tmp_skill
 Get-Content $tmp_skill | Add-Content "$env:USERPROFILE\.codex\instructions.md"
 Remove-Item $tmp_skill
 ```
@@ -264,7 +268,7 @@ Remove-Item $tmp_skill
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.copilot\skills" | Out-Null
 $tmp = "$env:TEMP\scholar-kit.tar.gz"
 Invoke-WebRequest -Uri "https://github.com/sunyue/scholar-kit/archive/refs/heads/main.tar.gz" -OutFile $tmp
-tar -xz --strip-components=2 -C "$env:USERPROFILE\.copilot\skills" -f $tmp "scholar-kit-main/academic-writing"
+tar -xz --strip-components=2 -C "$env:USERPROFILE\.copilot\skills" -f $tmp "scholar-kit-main/academic-writing-project-builder"
 Remove-Item $tmp
 ```
 
@@ -280,7 +284,9 @@ Remove-Item $tmp
 安装完成！请重启对应的 AI 工具以激活技能。
 
 技能激活后，直接在对话中说出触发词即可使用：
-  - academic-writing：   "帮我把 md 转成 docx"
+  - academic-writing-project-builder：   "帮我把 md 转成 docx"
+  - paper-style-distiller：   "蒸馏论文风格"
+  - style-guided-academic-writer：   "按蒸馏风格写作"
   - scientific-drawing： "帮我画一张架构图"
   - writing-style-check："帮我检查写作风格"
   - draft-placeholder-filler："填充占位符"
