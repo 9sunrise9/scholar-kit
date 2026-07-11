@@ -1,0 +1,142 @@
+{
+  "schema_version": "v1",
+  "required_top_level": [
+    "run_manifest",
+    "metrics",
+    "macro_blueprints",
+    "sentence_patterns",
+    "paragraph_templates",
+    "claim_evidence_bindings",
+    "related_work_patterns",
+    "innovation_patterns"
+  ],
+  "run_manifest": {
+    "run_id": "string",
+    "schema_version": "v1",
+    "prompt_pack_version": "string",
+    "skill_versions": [
+      {
+        "name": "string",
+        "version": "string"
+      }
+    ],
+    "source_corpus_hash": "string",
+    "run_timestamp": "iso8601",
+    "operator": "string",
+    "budget": {
+      "max_tokens_total": "number",
+      "max_minutes_total": "number",
+      "max_dimensions_parallel": "number"
+    },
+    "gates": {
+      "coverage_min": "number",
+      "consistency_min": "number",
+      "actionability_min": "number",
+      "leakage_risk_max": "number"
+    }
+  },
+  "metrics": {
+    "coverage": "number",
+    "consistency": "number",
+    "actionability": "number",
+    "leakage_risk": "number",
+    "ngram_overlap_4": "number",
+    "semantic_similarity_max": "number"
+  },
+  "macro_blueprints": [
+    {
+      "id": "string",
+      "source_paper": "string",
+      "problem_context": "string",
+      "research_gap": "string",
+      "proposed_method": "string",
+      "key_result": "string",
+      "contribution_claim": "string",
+      "completeness": "number",
+      "confidence": "number"
+    }
+  ],
+  "sentence_patterns": [
+    {
+      "id": "string",
+      "section": "string",
+      "intent": "string",
+      "tense": "string",
+      "rhetorical_strength": "soft|neutral|strong",
+      "pattern": "string",
+      "slots": ["string"],
+      "confidence": "number",
+      "evidence": [
+        {
+          "source_paper_id": "string",
+          "source_paragraph_id": "string",
+          "evidence_type": "quant|qual|ablation|comparison|stat_test",
+          "evidence_strength": "weak|medium|strong"
+        }
+      ],
+      "dedup_key": "string"
+    }
+  ],
+  "paragraph_templates": [
+    {
+      "id": "string",
+      "section": "string",
+      "intent": "string",
+      "template": "string",
+      "block_order": ["string"],
+      "required_slots": ["string"],
+      "optional_slots": ["string"],
+      "example_hints": ["string"],
+      "confidence": "number",
+      "evidence_count": "number",
+      "support_ratio": "number",
+      "dedup_key": "string"
+    }
+  ],
+  "claim_evidence_bindings": [
+    {
+      "claim_id": "string",
+      "claim_text": "string",
+      "claim_strength": "exploratory|supportive|strong",
+      "evidence": [
+        {
+          "source_paper_id": "string",
+          "source_paragraph_id": "string",
+          "figure_or_table_ref": "string",
+          "evidence_type": "quant|qual|ablation|comparison|stat_test",
+          "evidence_strength": "weak|medium|strong",
+          "confidence": "number"
+        }
+      ],
+      "status": "pass|needs_review|reject"
+    }
+  ],
+  "related_work_patterns": [
+    {
+      "id": "string",
+      "positioning_type": "contrast|comparison|gap_reference|citation_positioning|novelty_claim|prior_limitation",
+      "trigger_marker": "string",
+      "section": "string",
+      "pattern": "string",
+      "confidence": "number",
+      "evidence": [
+        {
+          "source_paper_id": "string",
+          "source_paragraph_id": "string"
+        }
+      ]
+    }
+  ],
+  "innovation_patterns": [
+    {
+      "id": "string",
+      "innovation_type": "method|theory|system|application|hybrid",
+      "claim_pattern": "string",
+      "mechanism_pattern": "string",
+      "gain_pattern": "string",
+      "boundary_pattern": "string",
+      "confidence": "number",
+      "human_review_required": true
+    }
+  ]
+}

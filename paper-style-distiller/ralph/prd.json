@@ -1,0 +1,124 @@
+{
+  "project": "paper-style-distiller",
+  "branchName": "ralph/postdistill-review-agents",
+  "description": "Build a post-distillation review agent system that validates distilled HTML outputs, routes uncertain items to human review, iterates review quality, and delivers the best final distilled HTML output.",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Define the post-distill review contract",
+      "description": "As a maintainer, I want a stable review contract so that post-distillation agents can classify, compare, and escalate items consistently.",
+      "acceptanceCriteria": [
+        "Define the required item fields for post-distill review outputs: item_id, source_id, raw_text, routing result, reviewer verdict, confidence, and human escalation",
+        "Define allowed verdict labels: pass, reject, needs_review, multi_candidate, reclassify",
+        "Define the human review pack fields and grouping keys",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Validate the coordinator and routing reviewer",
+      "description": "As a maintainer, I want the coordinator and routing reviewer validated by a subagent so that distilled items are routed to the right dimension or human review.",
+      "acceptanceCriteria": [
+        "Add a coordinator agent that only operates on distilled outputs",
+        "Add a routing reviewer that checks whether the assigned category matches the item’s semantic function",
+        "Routing reviewer outputs route_ok, reclassify, multi_candidate, or route_to_human",
+        "A validation subagent confirms the routing flow works end to end",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Create and validate D1-D4 structure reviewers",
+      "description": "As a maintainer, I want reviewers for macro blueprint, section argument, rhetorical moves, and paragraph templates so that high-level structure can be judged automatically and checked by a second agent.",
+      "acceptanceCriteria": [
+        "Add reviewer definitions for macro blueprint, section argument structure, rhetorical moves, and paragraph templates",
+        "Each reviewer uses semantic-first judgment and escalates uncertain cases to human review",
+        "Each reviewer returns pass, reject, or needs_review with a human_question when uncertain",
+        "A second evaluation subagent summarizes the quality of the D1-D4 review results",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Create and validate D5-D8 content-pattern reviewers",
+      "description": "As a maintainer, I want reviewers for sentence patterns, terminology collocation, tense/voice/hedging, and claim-evidence binding so that reusable phrasing and evidence support are checked automatically and re-evaluated.",
+      "acceptanceCriteria": [
+        "Add reviewer definitions for sentence patterns, terminology collocation, tense/voice/hedging, and claim-evidence binding",
+        "Sentence pattern review requires slot flexibility and reusable function",
+        "Claim-evidence review rejects unsupported strong claims",
+        "A second evaluation subagent summarizes the quality of the D5-D8 review results",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Create and validate D9-D11 linkage and innovation reviewers",
+      "description": "As a maintainer, I want reviewers for figure-text linkage, related-work positioning, and innovation phrasing so that visual linkage, prior-work positioning, and novelty claims are checked automatically and audited for quality.",
+      "acceptanceCriteria": [
+        "Add reviewer definitions for figure-text linkage, related-work positioning, and innovation phrasing",
+        "Related-work review distinguishes background from true positioning moves",
+        "Innovation review requires mechanism, gain, and boundary or escalates to human review",
+        "A quality-evaluation subagent reviews the D9-D11 outputs and records improvement suggestions",
+        "Typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Assemble the human review pack",
+      "description": "As a maintainer, I want unresolved items consolidated into a human review pack so that I can manually finish uncertain cases.",
+      "acceptanceCriteria": [
+        "Uncertain items from routing and all reviewers are grouped into a human review pack",
+        "The human review pack preserves evidence chains and conflict notes",
+        "Human review items are grouped by dimension and conflict type",
+        "Typecheck passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    }
+    ,
+    {
+      "id": "US-007",
+      "title": "Iterate review and distillation improvements",
+      "description": "As a maintainer, I want to run the distill-review-improve-verify loop so that review standards and distilled outputs converge toward the best achievable result.",
+      "acceptanceCriteria": [
+        "Use review results to produce concrete improvement suggestions",
+        "Apply the improvement suggestions to the distillation and review flow",
+        "Repeat validation until no further obvious improvements are available",
+        "Typecheck passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Build and verify the final best HTML output",
+      "description": "As a maintainer, I want the best final distilled HTML output regenerated and verified so that I can inspect the final review-ready result.",
+      "acceptanceCriteria": [
+        "Regenerate the final distilled HTML output from the best review iteration",
+        "The final HTML reflects the latest review decisions and human escalations",
+        "Verify in browser using dev-browser skill",
+        "Typecheck passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

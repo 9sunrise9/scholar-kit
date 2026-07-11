@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "postdistill-review-contract-v1",
+  "title": "Post-Distillation Review Contract v1",
+  "description": "Defines the required fields, verdict labels, and human review pack structure for all post-distillation review agents in paper-style-distiller.",
+
+  "definitions": {
+
+    "VerdictLabel": {
+      "type": "string",
+      "enum": ["pass", "reject", "needs_review"],
+      "description": "Used by every dimension reviewer. pass = keep, reject = discard, needs_review = escalate to human."
+    },
+
+    "RoutingVerdict": {
+      "type": "string",
+      "enum": ["route_ok", "reclassify", "multi_candidate", "route_to_human"],
+      "description": "Used only by the routing reviewer."
+    },
+
+    "HumanActionLabel": {
+      "type": "string",
+      "enum": ["keep", "modify", "reclassify", "reject", "split"],
+      "description": "The final decision made by the human reviewer."
+    },
+
+    "DimensionId": {
+      "type": "string",
+      "enum": [
+        "macro_blueprint",
+        "section_argument_structure",
+        "rhetorical_moves",
+        "paragraph_templates",
+        "sentence_patterns",
+        "terminology_collocation",
+        "tense_voice_hedging",
+        "claim_evidence_binding",
+        "figure_text_linkage",
+        "related_work_positioning",
+        "innovation_argument_phrasing"
+      ]
+    },
+
+    "ReviewItem": {
+      "type": "object",
+      "required": [
+        "item_id",
+        "source_id",
+        "raw_text",
+        "routing_verdict",
+        "reviewer_verdict",
+        "confidence",
+        "human_escalation"
+      ],
+      "properties": {
+        "item_id":           { "type": "string" },
+        "source_id":         { "type": "string", "description": "source_paper_id or source_paragraph_id" },
+        "raw_text":          { "type": "string" },
+        "dimension":         { "$ref": "#/definitions/DimensionId" },
+        "routing_verdict":   { "$ref": "#/definitions/RoutingVerdict" },
+        "reviewer_verdict":  { "$ref": "#/definitions/VerdictLabel" },
+        "confidence":        { "type": "number", "minimum": 0, "maximum": 1 },
+        "human_escalation":  { "type": "boolean" },
+        "semantic_interpretation": { "type": "string" },
+        "evidence_span":     { "type": "string" },
+        "risk_reason":       { "type": "string" },
+        "human_question":    { "type": "string" }
+      }
+    },
+
+    "HumanReviewItem": {
+      "type": "object",
+      "required": [
+        "item_id",
+        "source_id",
+        "initial_route",
+        "routing_review_result",
+        "dimension_review_result",
+        "confidence",
+        "uncertainty_reason",
+        "recommended_action"
+      ],
+      "properties": {
+        "item_id":                  { "type": "string" },
+        "source_id":                { "type": "string" },
+        "initial_route":            { "$ref": "#/definitions/DimensionId" },
+        "routing_review_result":    { "$ref": "#/definitions/RoutingVerdict" },
+        "dimension_review_result":  { "$ref": "#/definitions/VerdictLabel" },
+        "confidence":               { "type": "number", "minimum": 0, "maximum": 1 },
+        "uncertainty_reason":       { "type": "string" },
+        "recommended_action":       { "$ref": "#/definitions/HumanActionLabel" },
+        "human_decision":           { "$ref": "#/definitions/HumanActionLabel" },
+        "reviewer_notes":           { "type": "string" },
+        "conflict_type":            {
+          "type": "string",
+          "enum": ["routing_conflict", "multi_candidate", "evidence_gap", "semantic_ambiguity", "claim_unsupported", "leakage_risk", "none"]
+        }
+      }
+    },
+
+    "HumanReviewPack": {
+      "type": "object",
+      "required": ["pack_id", "generated_at", "groups"],
+      "properties": {
+        "pack_id":      { "type": "string" },
+        "generated_at": { "type": "string", "format": "date-time" },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["group_key", "items"],
+            "properties": {
+              "group_key": { "type": "string", "description": "dimension name or conflict_type" },
+              "items": {
+                "type": "array",
+                "items": { "$ref": "#/definitions/HumanReviewItem" }
+              }
+            }
+          }
+        },
+        "summary": {
+          "type": "object",
+          "properties": {
+            "total_items":          { "type": "integer" },
+            "by_dimension":         { "type": "object" },
+            "by_conflict_type":     { "type": "object" },
+            "priority_order":       { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    }
+  },
+
+  "ReviewConclusion": {
+    "description": "Top-level output of a full post-distill review run",
+    "type": "object",
+    "required": ["review_id", "run_id", "items", "human_review_pack", "summary"],
+    "properties": {
+      "review_id":         { "type": "string" },
+      "run_id":            { "type": "string" },
+      "items":             { "type": "array", "items": { "$ref": "#/definitions/ReviewItem" } },
+      "human_review_pack": { "$ref": "#/definitions/HumanReviewPack" },
+      "summary": {
+        "type": "object",
+        "properties": {
+          "total":          { "type": "integer" },
+          "pass":           { "type": "integer" },
+          "reject":         { "type": "integer" },
+          "needs_review":   { "type": "integer" },
+          "by_dimension":   { "type": "object" }
+        }
+      }
+    }
+  }
+}
