@@ -1,0 +1,4 @@
+interface:
+  display_name: "PPT SVG Designer"
+  short_description: "Design editable SVG figures directly from presentation templates"
+  default_prompt: "Use $ppt-svg-designer to draw an editable SVG matching my slide template."

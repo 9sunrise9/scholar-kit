@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="33.87cm" height="12.72cm" viewBox="0 0 960 360" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" fill="#193952">
+  <rect id="background" width="960" height="360" fill="white"/>
+  <g id="cards" text-anchor="middle">
+    <g id="input"><rect x="36" y="30" width="430" height="137" fill="#e1eff5"/><text x="251" y="90" font-weight="bold">输入</text><text x="251" y="133">指令与初始条件</text></g>
+    <g id="state"><rect x="494" y="30" width="430" height="137" fill="#eef5f7"/><text x="709" y="90" font-weight="bold">状态</text><text x="709" y="133">位置、姿态与速度</text></g>
+    <g id="output"><rect x="36" y="193" width="430" height="137" fill="#eef5f7"/><text x="251" y="253" font-weight="bold">输出</text><text x="251" y="296">测量结果与轨迹</text></g>
+    <g id="criteria"><rect x="494" y="193" width="430" height="137" fill="#e1eff5"/><text x="709" y="253" font-weight="bold">评价</text><text x="709" y="296">误差与响应时间</text></g>
+  </g>
+</svg>

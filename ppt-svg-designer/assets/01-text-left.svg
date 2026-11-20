@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="33.87cm" height="12.72cm" viewBox="0 0 960 360" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" fill="#193952">
+  <rect id="background" width="960" height="360" fill="white"/>
+  <g id="summary">
+    <text x="44" y="104" font-size="34" font-weight="bold">闭环控制</text>
+    <text x="44" y="165">测量输出与指令的偏差，</text>
+    <text x="44" y="206">据此修正下一步控制量。</text>
+  </g>
+  <g id="loop" text-anchor="middle">
+    <rect x="420" y="105" width="180" height="82" rx="8" fill="#e1eff5"/>
+    <rect x="714" y="105" width="180" height="82" rx="8" fill="#e1eff5"/>
+    <text x="510" y="155">控制器</text><text x="804" y="155">对象</text>
+    <path d="M600 145 H704 m-12 -8 12 8 -12 8 M804 187 V246 H510 V194 m-8 12 8 -12 8 12" fill="none" stroke="#25748a" stroke-width="3"/>
+    <text x="655" y="284">测量反馈</text>
+  </g>
+</svg>

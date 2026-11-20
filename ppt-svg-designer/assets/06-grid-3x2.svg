@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="33.87cm" height="12.72cm" viewBox="0 0 960 360" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" fill="#193952">
+  <rect id="background" width="960" height="360" fill="white"/>
+  <g id="modules" text-anchor="middle">
+    <g id="a"><rect x="30" y="32" width="282" height="136" fill="#e1eff5"/><text x="171" y="91" font-weight="bold">感知</text><text x="171" y="133">采集环境信息</text></g>
+    <g id="b"><rect x="339" y="32" width="282" height="136" fill="#e1eff5"/><text x="480" y="91" font-weight="bold">估计</text><text x="480" y="133">融合观测数据</text></g>
+    <g id="c"><rect x="648" y="32" width="282" height="136" fill="#e1eff5"/><text x="789" y="91" font-weight="bold">规划</text><text x="789" y="133">生成参考路径</text></g>
+    <g id="d"><rect x="30" y="192" width="282" height="136" fill="#eef5f7"/><text x="171" y="251" font-weight="bold">控制</text><text x="171" y="293">计算执行指令</text></g>
+    <g id="e"><rect x="339" y="192" width="282" height="136" fill="#eef5f7"/><text x="480" y="251" font-weight="bold">执行</text><text x="480" y="293">驱动机构运动</text></g>
+    <g id="f"><rect x="648" y="192" width="282" height="136" fill="#eef5f7"/><text x="789" y="251" font-weight="bold">评价</text><text x="789" y="293">分析任务结果</text></g>
+  </g>
+</svg>

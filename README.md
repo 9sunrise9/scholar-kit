@@ -8,6 +8,7 @@
 * 学术图表绘制（TikZ / matplotlib）
 * 学术写作风格检查（规则化检测与报告）
 * 草稿占位符填充（【...】语义补全与术语规范化）
+* PowerPoint 配图（按模板制作可编辑 SVG）
 
 兼容 **Claude Code**、**OpenCode**、**GitHub Copilot**、**Codex** 等主流 AI 编程助手。
 
@@ -23,6 +24,7 @@
 | `scientific-drawing` | TikZ / matplotlib 学术图表生成 | "画图"、"生成架构图"、"绘制流程图" |
 | `writing-style-check` | 学术正文风格检查，输出可执行修改建议 | "检查写作规范"、"润色论文"、"风格检查" |
 | `draft-placeholder-filler` | 识别并填充正文草稿中的【...】占位符，按提示语义改写 | "填充占位符"、"处理【】"、"补全草稿" |
+| `ppt-svg-designer` | 按 PowerPoint 模板批量制作可编辑 SVG 配图 | "按模板画 PPT 配图"、"制作可编辑 SVG" |
 
 ---
 
@@ -106,10 +108,16 @@ scholar-kit/
 │   ├── SKILL.md
 │   ├── README.md
 │   └── references/             # 配色规范、TikZ/matplotlib 规则
-└── writing-style-check/
+├── writing-style-check/
+│   ├── SKILL.md
+│   ├── README.md
+│   └── references/             # 写作风格规则库
+└── ppt-svg-designer/
     ├── SKILL.md
-    ├── README.md
-    └── references/             # 写作风格规则库
+    ├── agents/
+    ├── assets/                 # 可复制的 SVG 版式
+    ├── scripts/                # SVG 结构校验
+    └── tests/
 ```
 
 ---
@@ -214,6 +222,15 @@ scholar-kit/
 | 工具 | 版本要求 | 说明 |
 |------|---------|------|
 | 无额外依赖 | - | 仅依赖通用工具 `curl` 与 `tar` 进行安装 |
+
+---
+
+### ppt-svg-designer
+
+| 工具 | 版本要求 | 说明 |
+|------|---------|------|
+| `python3` | ≥ 3.9 | 校验脚本仅使用标准库 |
+| `inkscape` | 1.x（可选） | 生成 PNG 预览；未安装时仍可完成结构校验 |
 
 ---
 

@@ -21,6 +21,7 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
   4) scientific-drawing               — TikZ / matplotlib 学术图表生成
   5) writing-style-check              — 学术正文风格检查与修改建议
   6) draft-placeholder-filler         — 正文草稿【】占位符语义填充与改写
+  7) ppt-svg-designer                 — 按 PowerPoint 模板制作可编辑 SVG 配图
 
 请输入序号（如 1 2 3 4），或直接回车安装全部：
 ```
@@ -43,6 +44,7 @@ description: scholar-kit 交互式安装向导。当用户说"安装 scholar-kit
 | scientific-drawing  | `curl` 、 `tar` （下载必需）、 `python3` 、中文字体（见下方说明） |
 | writing-style-check | `curl` 、 `tar` （下载必需）、 `python3` |
 | draft-placeholder-filler | `curl` 、 `tar` （下载必需） |
+| ppt-svg-designer | `curl` 、 `tar` （下载必需）、 `python3` |
 
 检测方式：在终端执行 `command -v <工具名>` ，有输出则表示已安装。Windows 下使用 `where <工具名>` 。
 
@@ -290,6 +292,7 @@ Remove-Item $tmp
   - scientific-drawing： "帮我画一张架构图"
   - writing-style-check："帮我检查写作风格"
   - draft-placeholder-filler："填充占位符"
+  - ppt-svg-designer："按模板画 PPT 配图"
 ```
 
 ---

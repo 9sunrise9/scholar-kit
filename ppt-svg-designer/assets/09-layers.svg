@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="33.87cm" height="12.72cm" viewBox="0 0 960 360" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" fill="#193952">
+  <rect id="background" width="960" height="360" fill="white"/>
+  <g id="decision"><rect x="62" y="32" width="836" height="83" fill="#d6eaf1"/><text x="96" y="84" font-weight="bold">决策层</text><text x="350" y="84">任务分解与资源分配</text></g>
+  <g id="coordination"><rect x="62" y="139" width="836" height="83" fill="#e5f1f5"/><text x="96" y="191" font-weight="bold">协调层</text><text x="350" y="191">路径协同与指令调度</text></g>
+  <g id="execution"><rect x="62" y="246" width="836" height="83" fill="#eff5f7"/><text x="96" y="298" font-weight="bold">执行层</text><text x="350" y="298">运动控制与状态回传</text></g>
+</svg>
