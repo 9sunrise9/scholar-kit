@@ -1,0 +1,76 @@
+{
+  "defaults": {
+    "width": "33.87cm",
+    "height": "12.72cm",
+    "viewBox": "0 0 960 360",
+    "fontFamily": "Microsoft YaHei",
+    "fill": "#193952",
+    "accent": "#25748a",
+    "panel": "#e1eff5"
+  },
+  "layouts": [
+    {
+      "id": "text-left",
+      "name": "左字右图",
+      "when": "概念与原理图：左侧说明，右侧结构或回路",
+      "file": "assets/01-text-left.svg",
+      "groups": ["summary", "loop"]
+    },
+    {
+      "id": "text-top",
+      "name": "上字下图",
+      "when": "结论与示意曲线：上方结论，下方曲线或时间轴",
+      "file": "assets/02-text-top.svg",
+      "groups": ["caption", "plot"]
+    },
+    {
+      "id": "two-columns",
+      "name": "双栏",
+      "when": "两种方法、条件或结果的对照",
+      "file": "assets/03-two-columns.svg",
+      "groups": ["simulation", "experiment"]
+    },
+    {
+      "id": "three-columns",
+      "name": "三栏",
+      "when": "三个并列要点、步骤或角色",
+      "file": "assets/04-three-columns.svg",
+      "groups": ["question", "evidence", "argument"]
+    },
+    {
+      "id": "grid-2x2",
+      "name": "两列两行",
+      "when": "四类并列信息",
+      "file": "assets/05-grid-2x2.svg",
+      "groups": ["cards", "input", "state", "output", "criteria"]
+    },
+    {
+      "id": "grid-3x2",
+      "name": "三列两行",
+      "when": "六个模块或并列要点",
+      "file": "assets/06-grid-3x2.svg",
+      "groups": ["modules", "a", "b", "c", "d", "e", "f"]
+    },
+    {
+      "id": "process",
+      "name": "横向流程",
+      "when": "顺序步骤与里程碑",
+      "file": "assets/07-process.svg",
+      "groups": ["timeline", "stages"]
+    },
+    {
+      "id": "feedback",
+      "name": "反馈闭环",
+      "when": "循环、回流与改进",
+      "file": "assets/08-feedback.svg",
+      "groups": ["connections", "steps"]
+    },
+    {
+      "id": "layers",
+      "name": "分层架构",
+      "when": "上下层级与各自职责",
+      "file": "assets/09-layers.svg",
+      "groups": ["decision", "coordination", "execution"]
+    }
+  ]
+}
