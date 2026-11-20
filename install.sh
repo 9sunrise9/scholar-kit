@@ -14,7 +14,7 @@ fi
 REPO_BASE="https://raw.githubusercontent.com/sunyue/scholar-kit/main"
 REPO_ARCHIVE="https://github.com/sunyue/scholar-kit/archive/refs/heads/main.tar.gz"
 
-ALL_SKILLS=("academic-writing-project-builder" "paper-style-distiller" "style-guided-academic-writer" "scientific-drawing" "writing-style-check" "draft-placeholder-filler")
+ALL_SKILLS=("academic-writing-project-builder" "paper-style-distiller" "style-guided-academic-writer" "scientific-drawing" "writing-style-check" "draft-placeholder-filler" "ppt-svg-designer")
 SKILL_DESCS=(
   "academic-writing-project-builder  — 学术写作项目初始化 + Markdown → docx / LaTeX 转换"
   "paper-style-distiller            — 论文风格蒸馏（词汇/句型/逻辑/时态）"
@@ -22,6 +22,7 @@ SKILL_DESCS=(
   "scientific-drawing   — TikZ / matplotlib 学术图表生成"
   "writing-style-check  — 学术正文风格检查与修改建议"
   "draft-placeholder-filler — 正文草稿【】占位符语义填充与改写"
+  "ppt-svg-designer     — 按 PowerPoint 模板制作可编辑 SVG 配图"
 )
 
 TOOL_NAMES=("Claude Code" "OpenCode" "Codex CLI" "GitHub Copilot")
@@ -57,6 +58,7 @@ skill_deps() {
     scientific-drawing)   echo "curl tar python3" ;;
     writing-style-check)  echo "curl tar python3" ;;
     draft-placeholder-filler) echo "curl tar" ;;
+    ppt-svg-designer) echo "curl tar python3" ;;
     *)                    echo "curl tar" ;;
   esac
 }
@@ -384,3 +386,4 @@ echo "  - style-guided-academic-writer：     \"按蒸馏风格写作\""
 echo "  - scientific-drawing： \"帮我画一张架构图\""
 echo "  - writing-style-check：\"帮我检查写作风格\""
 echo "  - draft-placeholder-filler：\"填充占位符\""
+echo "  - ppt-svg-designer：\"按模板画 PPT 配图\""

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="33.87cm" height="12.72cm" viewBox="0 0 960 360" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" fill="#193952">
+  <rect id="background" width="960" height="360" fill="white"/>
+  <g id="simulation"><rect x="32" y="38" width="432" height="284" rx="8" fill="#e9f3f6"/>
+    <text x="66" y="103" font-size="32" font-weight="bold">数值仿真</text><text x="66" y="172">输入　环境与对象模型</text><text x="66" y="226">观察　参数变化的影响</text></g>
+  <g id="experiment"><rect x="496" y="38" width="432" height="284" rx="8" fill="#f4eee7"/>
+    <text x="530" y="103" font-size="32" font-weight="bold">水池试验</text><text x="530" y="172">输入　实物与测量条件</text><text x="530" y="226">观察　实测响应与偏差</text></g>
+</svg>

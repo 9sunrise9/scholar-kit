@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="33.87cm" height="12.72cm" viewBox="0 0 960 360" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" fill="#193952">
+  <rect id="background" width="960" height="360" fill="white"/>
+  <g id="question"><rect x="32" y="55" width="276" height="250" fill="#eef5f7"/><text x="57" y="126" font-size="32">提出问题</text><text x="57" y="202">记录观测现象</text><text x="57" y="244">界定研究范围</text></g>
+  <g id="evidence"><rect x="342" y="55" width="276" height="250" fill="#e1eff5"/><text x="367" y="126" font-size="32">收集证据</text><text x="367" y="202">设计对照试验</text><text x="367" y="244">保留原始记录</text></g>
+  <g id="argument"><rect x="652" y="55" width="276" height="250" fill="#eef5f7"/><text x="677" y="126" font-size="32">形成解释</text><text x="677" y="202">比较候选假设</text><text x="677" y="244">说明适用条件</text></g>
+</svg>

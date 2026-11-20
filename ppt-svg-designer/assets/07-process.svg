@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="33.87cm" height="12.72cm" viewBox="0 0 960 360" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" fill="#193952">
+  <rect id="background" width="960" height="360" fill="white"/>
+  <g id="timeline"><path d="M90 177 H868 l-15 -8 m15 8 -15 8" fill="none" stroke="#25748a" stroke-width="4"/>
+    <g fill="#25748a"><circle cx="105" cy="177" r="10"/><circle cx="351" cy="177" r="10"/><circle cx="598" cy="177" r="10"/><circle cx="842" cy="177" r="10"/></g></g>
+  <g id="stages" text-anchor="middle"><text x="105" y="132">任务定义</text><text x="351" y="132">方案设计</text><text x="598" y="132">原型实现</text><text x="842" y="132">对照验证</text>
+    <text x="105" y="233">明确边界</text><text x="351" y="233">比较路线</text><text x="598" y="233">联调接口</text><text x="842" y="233">分析证据</text></g>
+</svg>

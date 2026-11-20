@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="33.87cm" height="12.72cm" viewBox="0 0 960 360" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" fill="#193952">
+  <rect id="background" width="960" height="360" fill="white"/>
+  <g id="connections" fill="none" stroke="#25748a" stroke-width="4">
+    <path d="M310 100 H645 l-12 -8 m12 8 -12 8 M759 139 V222 l-8 -12 m8 12 8 -12 M650 260 H315 l12 -8 m-12 8 12 8 M201 221 V138 l-8 12 m8 -12 8 12"/>
+  </g>
+  <g id="steps" text-anchor="middle"><g fill="#e1eff5"><rect x="90" y="60" width="220" height="76" rx="10"/><rect x="650" y="60" width="220" height="76" rx="10"/><rect x="650" y="224" width="220" height="76" rx="10"/><rect x="90" y="224" width="220" height="76" rx="10"/></g>
+    <text x="200" y="107">设计任务</text><text x="760" y="107">组织实践</text><text x="760" y="271">分析证据</text><text x="200" y="271">调整任务</text></g>
+</svg>
