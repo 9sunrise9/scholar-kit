@@ -1,4 +1,4 @@
 interface:
   display_name: "PPT SVG Designer"
-  short_description: "Design editable SVG figures directly from presentation templates"
+  short_description: "Look up catalog.json and copy the matching SVG source"
   default_prompt: "Use $ppt-svg-designer to draw an editable SVG matching my slide template."
